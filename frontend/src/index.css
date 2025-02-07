@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+.active{
+    color: #1E73BE;
+}
+
+.editorjsdiv h2{
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.editorjsdiv h3, h4, h5{
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.editorjsdiv li{
+    margin-bottom: 10px;
+    list-style-type: disc;
+    padding-left: 10px;
+    margin-left: 25px;
+}
+
+html {
+  scroll-behavior: smooth;
+} 
+
+  nav, ul {
+  transition: all 0.4s ease;
+}
+
+.navbar-hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+.navbar-visible {
+  transform: translateY(0);
+  opacity: 1;
+} 
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+*/

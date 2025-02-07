@@ -1,0 +1,36 @@
+.user-input {
+    margin-bottom: 10px;
+  }
+  
+  .cr-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 5px;
+  }
+  
+  .cr-button:hover {
+    background-color: #45a049;
+  }
+  
+  .cr-input {
+    padding: 8px;
+    margin: 5px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
+  
+  .cr-input:disabled {
+    background-color: #f5f5f5;
+  }
+  
+  .cr-button + .cr-button {
+    background-color: #000000;
+  }
+  
+  .cr-button + .cr-button:hover {
+    background-color: #000000;
+  }

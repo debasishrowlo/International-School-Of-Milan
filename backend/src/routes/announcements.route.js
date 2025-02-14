@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const Announcement = require('../model/announcements.model.js');
-const Comment = require('../model/comment.model.js');
-const verifyToken = require('../middleware/verifyToken.js');
-const isAdmin = require('../middleware/isAdmin.js');
+import Announcement from '../model/announcements.model.js';
+import Comment from '../model/comment.model.js';
+import verifyToken from '../middleware/verifyToken.js';
+import isAdmin from '../middleware/isAdmin.js';
 
 // Create an announcement
 router.post("/", verifyToken, isAdmin, async (req, res) => {
@@ -102,5 +102,4 @@ router.delete("/:id", verifyToken, isAdmin, async (req, res) => {
     res.status(500).send({ message: "Error Deleting Announcement" });
   }
 });
-
-module.exports = router;
+export default router;

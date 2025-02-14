@@ -1,9 +1,9 @@
 
 // Function TO generate Username
 
-const fs = require('fs');
-const XLSX = require('xlsx');
-const User = require('../model/user.model');
+import fs from 'fs';
+import XLSX from 'xlsx';
+import User from '../model/user.model.js'
 
 function generateUsername(firstName, lastName, grade) {
   const prefix = `${firstName}${lastName}${grade}`;
@@ -60,4 +60,4 @@ const bulkRegister = async (req, res) => {
   }
 };
 
-module.exports = bulkRegister;
+export default bulkRegister;

@@ -1,9 +1,11 @@
 
-const multer = require('multer');
-const fs = require('fs');
-const path = require('path');
+import multer from 'multer';
+import fs from 'fs';
+import {dirname, join} from "path";
+import { fileURLToPath } from 'url';
 
-const uploadDir = path.join(__dirname, 'uploads');
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const uploadDir = join(__dirname, 'uploads');
 
 // Ensure the uploads directory exists
 if (!fs.existsSync(uploadDir)) {
@@ -21,5 +23,4 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-module.exports = upload;
-
+export default upload;

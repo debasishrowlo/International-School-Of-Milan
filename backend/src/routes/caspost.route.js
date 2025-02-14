@@ -1,10 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const CasPost = require('../model/caspost.model.js');
-const CASResponse = require('../model/casResponse.model.js');
-const verifyToken = require('../middleware/verifyToken.js');
-const isAdmin = require('../middleware/isAdmin.js');
-
+import CasPost from '../model/caspost.model.js';
+import CASResponse from '../model/casResponse.model.js';
+import verifyToken from '../middleware/verifyToken.js';
+import isAdmin from "../middleware/isAdmin.js";
 
 // Create A CAS
 router.post("/create", verifyToken, isAdmin, async (req, res) => {
@@ -132,5 +131,5 @@ router.delete("/:id", verifyToken, async (req, res) => {
 
 
 
-module.exports = router;
+export default router;
 

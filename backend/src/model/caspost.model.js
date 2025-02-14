@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-
+import mongoose from "mongoose"
+//import CasResponse from "./casResponse.model";
 const CasPostSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -27,4 +27,5 @@ const CasPostSchema = new mongoose.Schema({
 })
 
 const CasPost = mongoose.model('CAS', CasPostSchema);
-module.exports = CasPost;
+
+export default CasPost;

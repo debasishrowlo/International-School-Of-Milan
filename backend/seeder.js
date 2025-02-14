@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 require('dotenv').config()
 
-const User = require('./src/model/user.model.js')
-const Post = require('./src/model/post.model.js')
+import User from './src/model/user.model.js'
+import Post from './src/model/post.model.js'
 
 const deleteUsers = async () => {
   await User.deleteMany({})
@@ -17,7 +17,7 @@ const createAdminUser = async () => {
 
   const user = new User({ username, password, role: "admin" })
   await user.save()
-  
+
   return user
 }
 

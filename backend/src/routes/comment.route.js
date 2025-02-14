@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const Comment = require('../model/comment.model.js');
-const Post = require('../model/post.model.js');
+import Comment from '../model/comment.model.js';
+import Post from '../model/post.model.js';
 
 // Create a Comment
 router.post('/post-comment', async (req, res) => {
@@ -56,4 +56,4 @@ router.delete('/delete-comment/:id', async (req, res) => {
 })
 
 
-module.exports = router;
+export default router;

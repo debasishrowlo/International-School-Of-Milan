@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const ActivitySchema = new mongoose.Schema({
   type: {
@@ -39,4 +39,6 @@ ActivitySchema.set("toJSON", {
   }
 })
 
-module.exports = mongoose.model('Activity', ActivitySchema);
+const activity  = mongoose.model('Activity', ActivitySchema);
+
+export default activity;

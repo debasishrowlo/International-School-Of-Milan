@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const User = require('../model/user.model.js');
+import jwt from 'jsonwebtoken';
+import User from '../model/user.model.js';
 
 class UnauthorizedError extends Error {
   constructor(message) {
@@ -8,11 +8,12 @@ class UnauthorizedError extends Error {
   }
 }
 
-const verifyToken = async (req, res, next) => {
+const verifyToken = (req, res, next) => {
   try {
-    const token = req.headers.authorization;
-
-    console.log("requestData", token)
+    const token = req.cookies.token;
+    //const authHeader = req.headers.authorization;
+    //const token = authHeader.split(" ")[1];
+    //console.log("requested Token : ", token)
 
     if (!token) {
       res.status(401).json({
@@ -28,17 +29,21 @@ const verifyToken = async (req, res, next) => {
     if (!decoded.userId) {
       throw new UnauthorizedError('Invalid token payload');
     }
-
-    const user = await User.findById(decoded.userId);
-
-    if (!user) {
-      throw new UnauthorizedError('User not found');
-    }
+    //
+    //const user = User.findById(decoded.userId);
+    //
+    //if (!user) {
+    //  throw new UnauthorizedError('User not found');
+    //}
 
     // Set user info on request object
-    req.role = decoded.role;
-    req.user = user;
-    console.log('Req, user', req.user)
+
+    //console.log("before setting user role ")
+    req.user = decoded;
+    //console.log("after setting user role ....")
+    //req.user = user;
+    console.log('Req, user', req.user.role)
+
 
     // Continue to next middleware/route handler
     next();
@@ -59,4 +64,4 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
-module.exports = verifyToken;
+export default verifyToken;

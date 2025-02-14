@@ -1,10 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
-const verifyToken = require('../middleware/verifyToken.js');
-const isAdmin = require('../middleware/isAdmin.js');
+import verifyToken from '../middleware/verifyToken.js';
+import isAdmin from '../middleware/isAdmin.js';
 
-const Activity = require('../model/activity.js');
+import activity from '../model/activity.js';
 
 const supportedActivities = [
   "clubs",
@@ -17,9 +17,9 @@ const supportedActivities = [
 const activityNotSupported = (slug) => !supportedActivities.includes(slug)
 
 const invalidResponse = (res, message) => {
-    return res
-      .status(419)
-      .send({ message })
+  return res
+    .status(419)
+    .send({ message })
 }
 
 const createdResponse = (res, activity) => {
@@ -27,7 +27,7 @@ const createdResponse = (res, activity) => {
 }
 
 const findActivities = async (activityType) => {
-  return await Activity.find({ type: activityType })
+  return await activity.find({ type: activityType })
     .populate({ path: 'author', select: "username" })
     .sort({ createdAt: -1 })
 }
@@ -37,7 +37,7 @@ const successResponse = (res, activities) => {
 }
 
 const createActivity = async (activityData) => {
-  return await Activity.create(activityData)
+  return await activity.create(activityData)
 }
 
 router.get('/:activityType', verifyToken, async (req, res) => {
@@ -91,10 +91,10 @@ router.put("/:id", verifyToken, isAdmin, async (req, res) => {
   try {
     const activityId = req.params.id;
 
-    const updatedActivity = await Activity
+    const updatedActivity = await activity
       .findByIdAndUpdate(
-        activityId, 
-        { ...req.body }, 
+        activityId,
+        { ...req.body },
         { new: true }
       )
       .populate("author", "username")
@@ -116,7 +116,7 @@ router.delete("/:id", verifyToken, isAdmin, async (req, res) => {
   try {
     const activityId = req.params.id;
 
-    const activity = await Activity.findByIdAndDelete(activityId);
+    const activity = await activity.findByIdAndDelete(activityId);
     if (!activity) {
       return res.status(404).send({ message: "Activity Not Found" })
     }
@@ -131,4 +131,4 @@ router.delete("/:id", verifyToken, isAdmin, async (req, res) => {
   }
 })
 
-module.exports = router;
+export default router;

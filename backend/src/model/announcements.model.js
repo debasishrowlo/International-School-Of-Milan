@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose"
 
 const AnnouncementSchema = new mongoose.Schema({
   content: {
@@ -25,4 +25,5 @@ AnnouncementSchema.set("toJSON", {
 })
 
 const Announcement = mongoose.model('Announcement', AnnouncementSchema);
-module.exports = Announcement;
+
+export default Announcement;

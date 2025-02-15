@@ -18,7 +18,6 @@ const verifyToken = (req, res, next) => {
     if (!token) {
       res.status(401).json({
         message: 'No token provided',
-        token,
 
       })
     }

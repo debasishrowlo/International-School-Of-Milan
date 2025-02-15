@@ -17,10 +17,13 @@ import activityRoutes from './src/routes/activity.js'
 const app = express();
 dbConnect()
 app.use(express.json());
-app.use(cors({
-  origin: "*",
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(cookieParser())
 
 const PORT = process.env.PORT || 3000;

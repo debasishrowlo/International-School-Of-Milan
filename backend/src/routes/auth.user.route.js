@@ -57,13 +57,13 @@ router.post('/login', async (req, res) => {
     // Generate token here
     const token = await generateToken(user._id)
     console.log("This is token", token)
-    const options = {
-      httpOnly: true, // enable this only when u have https
-      secure: true,
-      sameSite: 'lax'
-    }
-    res.cookie("token", token, options);
-    res.cookie("isLoggedIn", true, options);
+    // const options = {
+    //   httpOnly: true, // enable this only when u have https
+    //   secure: true,
+    //   sameSite: 'lax'
+    // }
+    res.cookie("token", token);
+    res.cookie("isLoggedIn", true);
     res.status(200).send({
       message: 'User logged in successfully!', token, user: {
         _id: user._id,

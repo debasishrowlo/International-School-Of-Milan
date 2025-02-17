@@ -22,7 +22,7 @@ app.use(
     origin: ["http://localhost:5173", "https://international-school-of-milan-7ex8-m3gpwi73y.vercel.app"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
-
+    exposedHeaders: ["set-cookie"],
   })
 );
 

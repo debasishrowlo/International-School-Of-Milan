@@ -26,7 +26,6 @@ export const postApi = createApi({
         body: JSON.stringify(newPost),
         headers: {
           "Content-Type": "application/json",
-          authorization: `${localStorage.getItem('token')}`
         },
         credentials: "include",
       }),

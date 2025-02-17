@@ -23,6 +23,7 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
     exposedHeaders: ["set-cookie"],
+    headers: ["Content-Type", "Authorization"]
   })
 );
 

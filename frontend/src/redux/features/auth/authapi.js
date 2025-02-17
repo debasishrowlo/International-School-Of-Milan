@@ -5,8 +5,6 @@ const authApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${import.meta.env.VITE_BACKEND_URL}/auth`,
     credentials: "include",
-
-
   }),
   endpoints: (builder) => ({
     registerUser: builder.mutation({

@@ -12,11 +12,13 @@ interface User {
 interface AuthState {
   user: User | null;
   isLoggedIn: boolean;
+  token?: string;
 }
 
 interface SetUserPayload {
   user: User;
   isLoggedIn: boolean;
+  token: string;
 }
 
 // Constants
@@ -53,7 +55,7 @@ const getInitialState = (): AuthState => {
     clearAuthData();
     return {
       user: null,
-      isLoggedIn: false
+      isLoggedIn: false,
     };
   }
 
@@ -73,16 +75,18 @@ const authSlice = createSlice({
   initialState: getInitialState(),
   reducers: {
     setUser: (state, action: PayloadAction<SetUserPayload>) => {
-      const { user, isLoggedIn } = action.payload;
+      const { user, isLoggedIn, token } = action.payload;
 
       // Update state
       state.user = user;
       state.isLoggedIn = isLoggedIn;
+      state.token = token;
 
       // Persist data
       if (user && isLoggedIn) {
         localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
         Cookies.set(IS_LOGGED_IN_COOKIE, 'true', { secure: true, sameSite: 'lax' });
+        //Cookies.set(TOKEN_COOKIE, token, { secure: true, sameSite: 'lax' });
 
       } else {
         clearAuthData();

@@ -40,7 +40,7 @@ const Login = () => {
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('isLoggedIn', true);
       localStorage.setItem('token', response.token);
-      dispatch(setUser({ user, isLoggedIn: true }));
+      dispatch(setUser({ user, isLoggedIn: true, token: response.token }));
       navigate('/');
     } catch (err) {
       setMessage(`Please provide valid informations !`);

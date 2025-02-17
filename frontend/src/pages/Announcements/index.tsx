@@ -36,88 +36,88 @@ const Announcements = () => {
   }
 
   const form = useFormik({
-		initialValues: {
-			content: '',
-		},
-		validationSchema: yup.object().shape({
-			content: yup.string().trim().required('Content is required'),
-		}),
-		onSubmit: async (values, form) => {
-			try {
-				setLoading(true);
+    initialValues: {
+      content: '',
+    },
+    validationSchema: yup.object().shape({
+      content: yup.string().trim().required('Content is required'),
+    }),
+    onSubmit: async (values, form) => {
+      try {
+        setLoading(true);
 
-				const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/announcements', {
-					method: 'POST',
-					body: JSON.stringify({ content: values.content }),
-					credentials: 'include',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-				});
+        const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/announcements', {
+          method: 'POST',
+          body: JSON.stringify({ content: values.content }),
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
 
-				if (!response.ok) {
-					if (response.status === 401) {
-						localLogout();
-					}
+        if (!response.ok) {
+          if (response.status === 401) {
+            localLogout();
+          }
 
-					return;
-				}
+          return;
+        }
 
-				const jsonResponse: {
-					message: string;
-					announcement: Annoucement;
-				} = await response.json();
+        const jsonResponse: {
+          message: string;
+          announcement: Annoucement;
+        } = await response.json();
 
-				setAnnouncements([{ ...jsonResponse.announcement }, ...announcements]);
-				form.resetForm();
-				form.setFieldValue('content', '');
-			} catch (error) {
-				console.log('Failed to submit Post', error);
-			} finally {
-				setLoading(false);
-			}
-		},
+        setAnnouncements([{ ...jsonResponse.announcement }, ...announcements]);
+        form.resetForm();
+        form.setFieldValue('content', '');
+      } catch (error) {
+        console.log('Failed to submit Post', error);
+      } finally {
+        setLoading(false);
+      }
+    },
   });
 
   console.log(form.values);
 
   const openCommentsModal = (post) => {
-		setSelectedPost(post);
-		setIsModalOpen(true);
+    setSelectedPost(post);
+    setIsModalOpen(true);
   };
 
   const closeCommentsModal = () => {
-		setSelectedPost(null);
-		setNewComment(''); // Réinitialise le champ de saisie
-		setIsModalOpen(false);
+    setSelectedPost(null);
+    setNewComment(''); // Réinitialise le champ de saisie
+    setIsModalOpen(false);
   };
 
   const addComment = () => {
-		// if (!newComment.trim()) return
-		// const updatedPosts = posts.map((post) => {
-		//   if (post.id === selectedPost.id) {
-		//     const updatedPost = {
-		//       ...post,
-		//       comments: [
-		//         ...post.comments,
-		//         {
-		//           id: Date.now(),
-		//           content: newComment,
-		//           author: {
-		//             username: "CurrentUser",
-		//             avatar: `https://i.pravatar.cc/40?u=CurrentUser${Date.now()}`,
-		//           },
-		//         },
-		//       ],
-		//     }
-		//     // Ensure selectedPost is updated to reflect the changes
-		//     setSelectedPost(updatedPost)
-		//     return updatedPost
-		//   }
-		//   return post
-		// })
-		// setPosts(updatedPosts)
-		// setNewComment("")
+    // if (!newComment.trim()) return
+    // const updatedPosts = posts.map((post) => {
+    //   if (post.id === selectedPost.id) {
+    //     const updatedPost = {
+    //       ...post,
+    //       comments: [
+    //         ...post.comments,
+    //         {
+    //           id: Date.now(),
+    //           content: newComment,
+    //           author: {
+    //             username: "CurrentUser",
+    //             avatar: `https://i.pravatar.cc/40?u=CurrentUser${Date.now()}`,
+    //           },
+    //         },
+    //       ],
+    //     }
+    //     // Ensure selectedPost is updated to reflect the changes
+    //     setSelectedPost(updatedPost)
+    //     return updatedPost
+    //   }
+    //   return post
+    // })
+    // setPosts(updatedPosts)
+    // setNewComment("")
   };
 
   const fetchAnnouncements = async () => {
@@ -161,8 +161,10 @@ const Announcements = () => {
       {announcements.map((announcement) => (
         <div key={announcement.id} className="ann-post">
           <div className="ann-post-header">
-            <Avatar username={announcement.author.username} />
-            <span className="ann-username" style={{marginLeft:"10px"}}>{announcement.author.username}</span>
+            <Avatar username={announcement.author?.username || ""} />
+            <span className="ann-username" style={{ marginLeft: "10px" }}>
+              {announcement.author?.username || ""}
+            </span>
           </div>
           <div
             className="tiptap post-content"

@@ -122,7 +122,10 @@ const EditPost = ({
           coverImageUrl: values.coverImageUrl,
           content: values.content,
           description: values.description,
-          author: values.author,
+          author: {
+            id: user?.id || '',
+            username: user?.username || '',
+          },
         })
 
         if (result.type === "success") {

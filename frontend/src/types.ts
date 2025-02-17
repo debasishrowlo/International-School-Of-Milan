@@ -8,7 +8,7 @@ export type Post = {
     id: string,
     username: string,
   },
-  username: string
+  username?: string
 }
 
 export type Activity = {

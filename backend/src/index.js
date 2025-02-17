@@ -2,17 +2,17 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import dbConnect from "./src/db/db.js";
+import dbConnect from "./db/db.js";
 dotenv.config()
 import cookieParser from "cookie-parser";
 
-import postRoutes from "./src/routes/post.route.js";
-import announcementRoutes from "./src/routes/announcements.route.js"
-import commentRoutes from './src/routes/comment.route.js';
-import userRoutes from "./src/routes/auth.user.route.js";
-import casroute from "./src/routes/caspost.route.js"
-import casresponseroute from "./src/routes/casResponse.route.js"
-import activityRoutes from './src/routes/activity.js'
+import postRoutes from "./routes/post.route.js";
+import announcementRoutes from "./routes/announcements.route.js"
+import commentRoutes from './routes/comment.route.js';
+import userRoutes from "./routes/auth.user.route.js";
+import casroute from "./routes/caspost.route.js"
+import casresponseroute from "./routes/casResponse.route.js"
+import activityRoutes from './routes/activity.js'
 
 const app = express();
 dbConnect()

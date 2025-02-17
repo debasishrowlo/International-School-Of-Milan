@@ -4,7 +4,9 @@ const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
     baseUrl: `${import.meta.env.VITE_BACKEND_URL}/auth`,
-    credentials: "include"
+    credentials: "include",
+
+
   }),
   endpoints: (builder) => ({
     registerUser: builder.mutation({
@@ -25,6 +27,9 @@ const authApi = createApi({
       query: () => ({
         url: "/logout",
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        }
       })
     }),
     getUserProfile: builder.query({

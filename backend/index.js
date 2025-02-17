@@ -22,6 +22,7 @@ app.use(
     origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
+    headers: ["Content-Type", "Authorization"]
   })
 );
 

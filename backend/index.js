@@ -19,10 +19,11 @@ dbConnect()
 app.use(express.json());
 app.use(
   cors({
-    origin: "*",
+    origin: ["http://localhost:5173", "https://international-school-of-milan.vercel.app"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
-    headers: ["Content-Type", "Authorization"]
+    headers: ["Content-Type", "Authorization"],
+    allowedHeaders: "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   })
 );
 

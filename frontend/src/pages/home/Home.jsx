@@ -6,6 +6,7 @@ import SearchPost from '@/pages/Posts/SearchPost'
 import Popup from '@/components/popup';
 import { createSingleNewsRoute } from "@/router"
 import * as u from "@/utils"
+import axios from 'axios';
 
 const Home = () => {
   const [search, setSearch] = useState("")
@@ -23,11 +24,8 @@ const Home = () => {
       url += `?search=${search}`
     }
 
-    const response = await fetch(url, {
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      }
+    const response = await axios.get(url, {
+      withCredentials: true,
     })
 
     if (!response.ok) {

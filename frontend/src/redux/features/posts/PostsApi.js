@@ -7,7 +7,7 @@ export const postApi = createApi({
     baseUrl: import.meta.env.VITE_BACKEND_URL,
     credentials: 'include',
     prepareHeaders: (headers, { getState }) => {
-      const token = Cookies.get("token")
+      const token = localStorage.getItem("token")
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }

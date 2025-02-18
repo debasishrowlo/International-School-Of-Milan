@@ -25,7 +25,9 @@ const Home = () => {
     }
 
     const response = await axios.get(url, {
-      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
     })
 
     if (!response.ok) {

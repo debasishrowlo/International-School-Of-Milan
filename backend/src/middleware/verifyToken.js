@@ -10,7 +10,7 @@ class UnauthorizedError extends Error {
 
 const verifyToken = (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const token = req.cookies.token || req.headers.authorization.split(" ")[1];
     //const authHeader = req.headers.authorization;
     //const token = authHeader.split(" ")[1];
     //console.log("requested Token : ", token)

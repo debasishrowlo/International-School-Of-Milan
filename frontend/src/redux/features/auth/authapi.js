@@ -1,72 +1,79 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import Cookies from 'js-cookie'  // Import js-cookie if not already imported
 
-const authApi = createApi({
-  reducerPath: 'authApi',
+export const postApi = createApi({
+  reducerPath: 'postsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${import.meta.env.VITE_BACKEND_URL}/auth`,
-    credentials: "include",
-  }),
-  endpoints: (builder) => ({
-    registerUser: builder.mutation({
-      query: (newUser) => ({
-        url: "/register",
-        method: "POST",
-        body: newUser,
-      })
-    }),
-    loginUser: builder.mutation({
-      query: (credentials) => ({
-        url: "/login",
-        method: "POST",
-        body: JSON.stringify(credentials),
+    baseUrl: import.meta.env.VITE_BACKEND_URL,
+    credentials: 'include',
+    prepareHeaders: (headers) => {
+      // Get the token from cookie
+      const token = Cookies.get('token')
 
-        headers: {
-          "Content-Type": "application/json",
-        }
+      // If token exists, add it to headers
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`)
+      }
+
+      headers.set('Content-Type', 'application/json')
+      return headers
+    },
+  }),
+  tagTypes: ['Posts'],
+  endpoints: (builder) => ({
+    fetchPosts: builder.query({
+      query: ({ search = '', category = '', location = '' }) => ({
+        url: `/posts?search=${search}&category=${category}&location=${location}`,
+        credentials: 'include'
+      }),
+      providesTags: ['Posts']
+    }),
+    fetchPostById: builder.query({
+      query: (id) => ({
+        url: `/posts/${id}`,
+        credentials: 'include'
+      }),
+    }),
+    fetchRelatedPosts: builder.query({
+      query: (id) => ({
+        url: `/posts/related/${id}`,
+        credentials: 'include'
       })
     }),
-    logoutUser: builder.mutation({
-      query: () => ({
-        url: "/logout",
+    createPost: builder.mutation({
+      query: (newPost) => ({
+        url: `/posts`,
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        }
-      })
-    }),
-    getUserProfile: builder.query({
-      query: () => ({
-        url: "/users",
-        method: "GET",
+        body: newPost,  // No need to JSON.stringify
+        credentials: "include",
       }),
-      refetchOnMount: true,
-      providesTags: ["User"], // Fix the usage of invalidation/providesTags
+      invalidatesTags: ['Posts'],
     }),
-    deleteUser: builder.mutation({
-      query: (userId) => ({
-        url: `/users/${userId}`,
+    updatePost: builder.mutation({
+      query: ({ id, ...rest }) => ({
+        url: `/posts/update-post/${id}`,
+        method: "PATCH",
+        body: rest,
+        credentials: "include",
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Posts', id }],
+    }),
+    deletePost: builder.mutation({
+      query: (id) => ({
+        url: `/posts/${id}`,
         method: "DELETE",
+        credentials: "include",
       }),
-      invalidatesTags: ["User"],
-    }),
-    updateUserRole: builder.mutation({
-      query: ({ userId, role }) => ({
-        url: `/users/${userId}`,
-        method: "PUT",
-        body: { role },
-      }),
-      invalidatesTags: ["User"],
+      invalidatesTags: (result, error, { id }) => [{ type: 'Posts', id }],
     }),
   })
-});
+})
 
 export const {
-  useRegisterUserMutation,
-  useLoginUserMutation,
-  useLogoutUserMutation,
-  useGetUserProfileQuery,
-  useDeleteUserMutation,
-  useUpdateUserRoleMutation
-} = authApi;
-
-export default authApi;
+  useFetchPostsQuery,
+  useFetchPostByIdQuery,
+  useFetchRelatedPostsQuery,
+  useCreatePostMutation,
+  useUpdatePostMutation,
+  useDeletePostMutation
+} = postApi

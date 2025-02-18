@@ -62,7 +62,11 @@ router.post('/login', async (req, res) => {
     //   secure: true,
     //   sameSite: 'lax'
     // }
-    res.cookie("token", token);
+    res.cookie("token", token,{
+  httpOnly: true,
+  sameSite: 'lax', // Use 'none' for cross-origin in production with secure=true
+  path: '/'
+});
     res.cookie("isLoggedIn", true);
     res.status(200).send({
       message: 'User logged in successfully!', token, user: {

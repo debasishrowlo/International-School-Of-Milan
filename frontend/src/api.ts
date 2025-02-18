@@ -11,9 +11,10 @@ export const fetchPosts = async (search = ""): Promise<Post[]> => {
   }
 
   const response = await axios.get(url, {
-    headers: {
-      authorization: `${localStorage.getItem('token')}`
-    }
+    withCredentials:true
+    //headers: {
+    //  Authorization: `${localStorage.getItem('token')}`
+    //}
 
   })
 

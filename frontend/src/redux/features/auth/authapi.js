@@ -18,7 +18,9 @@ const authApi = createApi({
       query: (credentials) => ({
         url: "/login",
         method: "POST",
-        body: credentials,
+        body: JSON.stringify(credentials),
+        headers: {'Content-Type': 'application/json'},
+
       })
     }),
     logoutUser: builder.mutation({

@@ -16,7 +16,7 @@ import userDataPermission from '../middleware/userDataPermission.js';
 router.post('/bulkRegister', upload.single('excelFile'), bulkRegister)
 // Multi User Route
 
-router.post('/multiRegisterRoute',verifyToken,userDataPermission("admin","moderator"), async (req, res) => {
+router.post('/multiRegisterRoute', verifyToken, userDataPermission("admin", "moderator"), async (req, res) => {
 
   console.log("This is users", req.body);
   const password = "ISM2025";
@@ -62,11 +62,10 @@ router.post('/login', async (req, res) => {
     //   secure: true,
     //   sameSite: 'lax'
     // }
-    res.cookie("token", token,{
-  httpOnly: true,
-  sameSite: 'lax', // Use 'none' for cross-origin in production with secure=true
-  path: '/'
-});
+    res.cookie("token", token, {
+      sameSite: 'lax', // Use 'none' for cross-origin in production with secure=true
+      path: '/'
+    });
     res.cookie("isLoggedIn", true);
     res.status(200).send({
       message: 'User logged in successfully!', token, user: {
@@ -95,27 +94,27 @@ router.post('/logout', async (req, res) => {
 })
 
 // Get  users
-router.get('/users',verifyToken, userDataPermission("admin","moderator"), async (req, res) => {
+router.get('/users', verifyToken, userDataPermission("admin", "moderator"), async (req, res) => {
   try {
 
-    if(req.user.role == "admin"){
+    if (req.user.role == "admin") {
       const users = await User.find({
-         role:{
-           $ne:"admin"
-         }
-             
-      })
-      res.status(200).send({message:"Users Found Sucessfully", users})
+        role: {
+          $ne: "admin"
+        }
 
-    }else{
+      })
+      res.status(200).send({ message: "Users Found Sucessfully", users })
+
+    } else {
       const users = await User.find({
-        where : {
-            role:{
-              $nin :["admin", "moderator"]
-            }
+        where: {
+          role: {
+            $nin: ["admin", "moderator"]
+          }
         }
       })
-      res.status(200).send({message:"Users Found Sucessfully", users})
+      res.status(200).send({ message: "Users Found Sucessfully", users })
     }
 
   } catch (error) {
@@ -126,29 +125,29 @@ router.get('/users',verifyToken, userDataPermission("admin","moderator"), async 
 })
 
 // Delete a user
-router.delete('/users/:id',verifyToken,userDataPermission("admin","moderator"), async (req, res) => {
+router.delete('/users/:id', verifyToken, userDataPermission("admin", "moderator"), async (req, res) => {
   try {
     const { id } = req.params;
-    if(req.user.role == "admin"){
+    if (req.user.role == "admin") {
       const user = await User.deleteOne({
-        _id:id,
-         role:{
-           $ne:"admin"
-         }
-             
-      })
-      res.status(200).send({message:"User data deleted Sucessfully", user})
+        _id: id,
+        role: {
+          $ne: "admin"
+        }
 
-    }else{
+      })
+      res.status(200).send({ message: "User data deleted Sucessfully", user })
+
+    } else {
       const user = await User.deleteOne({
-        where : {
-          _id:id,
-            role:{
-              $nin :["admin", "moderator"]
-            }
+        where: {
+          _id: id,
+          role: {
+            $nin: ["admin", "moderator"]
+          }
         }
       })
-      res.status(200).send({message:"Users Found Sucessfully", user})
+      res.status(200).send({ message: "Users Found Sucessfully", user })
     }
   } catch (error) {
     console.error("Error Deleting User.", error);
@@ -174,8 +173,8 @@ router.put('/users/:id', async (req, res) => {
 // Reset Password
 router.put('/resetPassword', verifyToken, async (req, res) => {
   try {
-    const  {newPassword}  = req.body;
-    const  id  = req.user.userId;
+    const { newPassword } = req.body;
+    const id = req.user.userId;
     console.log("This is new password", newPassword, id)
     const user = await User.findById({
       _id: id,
@@ -204,33 +203,33 @@ router.put('/resetPassword', verifyToken, async (req, res) => {
 })
 //Update password
 
-router.put('/users/password/:id',verifyToken,userDataPermission("admin","moderator"), async (req, res) => {
-  function hashPassword  (newPassword){
-    const hashedPass = bcrypt.hash(newPassword,10)
+router.put('/users/password/:id', verifyToken, userDataPermission("admin", "moderator"), async (req, res) => {
+  function hashPassword(newPassword) {
+    const hashedPass = bcrypt.hash(newPassword, 10)
     return hashedPass;
-  } 
-    const { id } = req.params;
-    const bodyPassword = req.body;
-    try{
-    if(req.user.role == "admin"){
+  }
+  const { id } = req.params;
+  const bodyPassword = req.body;
+  try {
+    if (req.user.role == "admin") {
       const user = await User.updateOne({
-        _id:id,
-         role:{
-           $ne:"admin"
-         },
-           password:hashPassword(bodyPassword) 
+        _id: id,
+        role: {
+          $ne: "admin"
+        },
+        password: hashPassword(bodyPassword)
       })
-      res.status(200).send({message:"User's password updated Sucessfully", user})
-    }else{
+      res.status(200).send({ message: "User's password updated Sucessfully", user })
+    } else {
       const user = await User.deleteOne({
-        where : {
-          _id:id,
-            role:{
-              $nin :["admin", "moderator"]
-            },password:hashPassword(bodyPassword)
+        where: {
+          _id: id,
+          role: {
+            $nin: ["admin", "moderator"]
+          }, password: hashPassword(bodyPassword)
         }
       })
-      res.status(200).send({message:"User's password updated Sucessfully", user})
+      res.status(200).send({ message: "User's password updated Sucessfully", user })
     }
   } catch (error) {
     console.error("Error chnaging password", error);

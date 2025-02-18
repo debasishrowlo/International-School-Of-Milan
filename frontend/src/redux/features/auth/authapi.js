@@ -1,79 +1,81 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import Cookies from 'js-cookie'  // Import js-cookie if not already imported
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import Cookies from 'js-cookie';
 
-export const postApi = createApi({
-  reducerPath: 'postsApi',
+const authApi = createApi({
+  reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_BACKEND_URL,
-    credentials: 'include',
-    prepareHeaders: (headers) => {
-      // Get the token from cookie
-      const token = Cookies.get('token')
-
-      // If token exists, add it to headers
+    baseUrl: `${import.meta.env.VITE_BACKEND_URL}/auth`,
+    credentials: "include",
+    prepareHeaders: (headers, { getState }) => {
+      const token = Cookies.get("token")
       if (token) {
-        headers.set('Authorization', `Bearer ${token}`)
+        headers.set("Authorization", `Bearer ${token}`);
       }
-
-      headers.set('Content-Type', 'application/json')
+      headers.set("Content-Type", "application/json");
       return headers
-    },
+    }
   }),
-  tagTypes: ['Posts'],
   endpoints: (builder) => ({
-    fetchPosts: builder.query({
-      query: ({ search = '', category = '', location = '' }) => ({
-        url: `/posts?search=${search}&category=${category}&location=${location}`,
-        credentials: 'include'
-      }),
-      providesTags: ['Posts']
-    }),
-    fetchPostById: builder.query({
-      query: (id) => ({
-        url: `/posts/${id}`,
-        credentials: 'include'
-      }),
-    }),
-    fetchRelatedPosts: builder.query({
-      query: (id) => ({
-        url: `/posts/related/${id}`,
-        credentials: 'include'
+    registerUser: builder.mutation({
+      query: (newUser) => ({
+        url: "/register",
+        method: "POST",
+        body: newUser,
       })
     }),
-    createPost: builder.mutation({
-      query: (newPost) => ({
-        url: `/posts`,
+    loginUser: builder.mutation({
+      query: (credentials) => ({
+        url: "/login",
         method: "POST",
-        body: newPost,  // No need to JSON.stringify
-        credentials: "include",
-      }),
-      invalidatesTags: ['Posts'],
+        body: JSON.stringify(credentials),
+
+        headers: {
+          "Content-Type": "application/json",
+        }
+      })
     }),
-    updatePost: builder.mutation({
-      query: ({ id, ...rest }) => ({
-        url: `/posts/update-post/${id}`,
-        method: "PATCH",
-        body: rest,
-        credentials: "include",
-      }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Posts', id }],
+    logoutUser: builder.mutation({
+      query: () => ({
+        url: "/logout",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      })
     }),
-    deletePost: builder.mutation({
-      query: (id) => ({
-        url: `/posts/${id}`,
+    getUserProfile: builder.query({
+      query: () => ({
+        url: "/users",
+        method: "GET",
+      }),
+      refetchOnMount: true,
+      providesTags: ["User"], // Fix the usage of invalidation/providesTags
+    }),
+    deleteUser: builder.mutation({
+      query: (userId) => ({
+        url: `/users/${userId}`,
         method: "DELETE",
-        credentials: "include",
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Posts', id }],
+      invalidatesTags: ["User"],
+    }),
+    updateUserRole: builder.mutation({
+      query: ({ userId, role }) => ({
+        url: `/users/${userId}`,
+        method: "PUT",
+        body: { role },
+      }),
+      invalidatesTags: ["User"],
     }),
   })
-})
+});
 
 export const {
-  useFetchPostsQuery,
-  useFetchPostByIdQuery,
-  useFetchRelatedPostsQuery,
-  useCreatePostMutation,
-  useUpdatePostMutation,
-  useDeletePostMutation
-} = postApi
+  useRegisterUserMutation,
+  useLoginUserMutation,
+  useLogoutUserMutation,
+  useGetUserProfileQuery,
+  useDeleteUserMutation,
+  useUpdateUserRoleMutation
+} = authApi;
+
+export default authApi;

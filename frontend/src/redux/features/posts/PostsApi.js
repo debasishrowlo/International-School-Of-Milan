@@ -6,7 +6,14 @@ export const postApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_BACKEND_URL,
     credentials: 'include',
-    headers:{'Content-Type': 'application/json'}
+    prepareHeaders: (headers, { getState }) => {
+      const token = Cookies.get("token")
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      headers.set("Content-Type", "application/json");
+      return headers
+    }
   }),
   tagTypes: ['Posts'],
   endpoints: (builder) => ({

@@ -1,11 +1,11 @@
 import React from "react";
-//import { useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux"
 
 const AuthGuard = ({ children }: { children: React.ReactNode }) => {
-  //const { isLoggedIn } = useSelector((state:any) => state.auth);
   const location = useLocation();
-  const isLoggedIn = localStorage.getItem('isLoggedIn');
+  const isLoggedIn = useSelector(state => state.auth.isLoggedIn)
+
   if (isLoggedIn) {
     return children;
   }

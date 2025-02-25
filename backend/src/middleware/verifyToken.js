@@ -10,46 +10,25 @@ class UnauthorizedError extends Error {
 
 const verifyToken = (req, res, next) => {
   try {
-    const token = req.cookies.token || req.headers?.Authorization?.split(" ")[1];
-    //const authHeader = req.headers.authorization;
-    //const token = authHeader.split(" ")[1];
-    //console.log("requested Token : ", token)
+    const token = req.cookies.token
 
     if (!token) {
       return res.status(401).json({
         message: 'No token provided',
-
       })
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    console.log("Decoded", decoded)
     if (!decoded.userId) {
       throw new UnauthorizedError('Invalid token payload');
     }
-    //
-    //const user = User.findById(decoded.userId);
-    //
-    //if (!user) {
-    //  throw new UnauthorizedError('User not found');
-    //}
 
-    // Set user info on request object
-
-    //console.log("before setting user role ")
     req.user = decoded;
-    //console.log("after setting user role ....")
-    //req.user = user;
-    console.log('Req, user', req.user.role)
 
-
-    // Continue to next middleware/route handler
     next();
-
   } catch (error) {
     console.error('Auth Error:', error);
 
-    // Handle different types of errors appropriately
     if (error instanceof jwt.JsonWebTokenError) {
       return res.status(401).json({ message: 'Invalid token' });
     }

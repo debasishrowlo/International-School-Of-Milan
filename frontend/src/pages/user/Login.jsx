@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
+import cookies from "js-cookie"
 
 import { useLoginUserMutation, useLogoutUserMutation } from '../../redux/features/auth/authapi';
 import { setUser } from '../../redux/features/auth/authSlice';
@@ -10,20 +11,20 @@ import { setUser } from '../../redux/features/auth/authSlice';
 import "./customCheckbox.css"
 
 const Login = () => {
-  const [message, setMessage] = useState('');
-  const [password, setPassword] = useState('');
-
-  const [name, setName] = useState('');
-  const [surname, setSurname] = useState('');
-  const [grade, setGrade] = useState('');
-
   const dispatch = useDispatch();
-
-  const [loginUser, { isLoading: loginLoading }] = useLoginUserMutation();
-  const { isLoggedIn } = useSelector(state => state.auth)
-
   const navigate = useNavigate();
-  // console.log("Loging user Api", loginUser);
+  const state = useSelector(state => state)
+  const [loginUser, { isLoading: loginLoading }] = useLoginUserMutation();
+
+  console.log(state)
+
+  const [message, setMessage] = useState('');
+  const [name, setName] = useState('User');
+  const [surname, setSurname] = useState('Test');
+  const [grade, setGrade] = useState('Admin');
+  const [password, setPassword] = useState('1234');
+  
+  const isLoggedIn = cookies.get("isLoggedIn") !== undefined
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -36,13 +37,11 @@ const Login = () => {
 
     try {
       const response = await loginUser(data).unwrap();
-      const { user } = response;
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('isLoggedIn', true);
-      localStorage.setItem('token', response.token);
-      dispatch(setUser({ user, isLoggedIn: true, token: response.token }));
+      // const { user } = response;
+      dispatch(setUser({ isLoggedIn: true }))
       navigate('/');
     } catch (err) {
+      console.log(err)
       setMessage(`Please provide valid informations !`);
     }
   };

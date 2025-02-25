@@ -15,7 +15,9 @@ import casresponseroute from "./src/routes/casResponse.route.js"
 import activityRoutes from './src/routes/activity.js'
 
 const app = express();
+
 dbConnect()
+
 app.use(express.json());
 app.use(
   cors({
@@ -38,7 +40,7 @@ app.use("/api/cas", casroute);
 app.use("/api/response", casresponseroute);
 
 app.get('/', (req, res) => {
-  res.send('Hello Worldd!');
+  res.status(404).send();
 });
 
 app.listen(PORT, () => {

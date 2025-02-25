@@ -1,20 +1,24 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux'
-import Banner from "./Banner"
-import SearchPost from '@/pages/Posts/SearchPost'
-import Popup from '@/components/popup';
-import { createSingleNewsRoute } from "@/router"
+
 import * as u from "@/utils"
 import axios from 'axios';
 
+import Banner from "./Banner"
+import SearchPost from '@/pages/Posts/SearchPost'
+import Popup from '@/components/popup';
+
+import { createSingleNewsRoute } from "@/router"
+
 const Home = () => {
+  const { user } = useSelector((state) => state.auth)
+
   const [search, setSearch] = useState("")
   const [loading, setLoading] = useState(true)
   const [posts, setPosts] = useState([])
-  const { user } = useSelector((state) => state.auth)
-  console.log("Utserdfdeifjdf", user && user.firstLogin)
   const [showResetPopup, setShowResetPopup] = useState(false);
+
   const handleSearchChange = (e) => setSearch(e.target.value);
   const handleSearch = () => setQuery({ search, category });
 
@@ -25,9 +29,7 @@ const Home = () => {
     }
 
     const response = await axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
+      withCredentials: true,
     })
 
     if (!response.ok) {
@@ -46,11 +48,13 @@ const Home = () => {
   useEffect(() => {
     fetchData()
   }, [])
+
   useEffect(() => {
     if (user && user.firstLogin === true) {
       setShowResetPopup(true);
     }
   }, [user])
+
   useEffect(() => {
     let timer;
     if (showResetPopup) {
@@ -60,6 +64,7 @@ const Home = () => {
     }
     return () => clearTimeout(timer);
   }, [showResetPopup]);
+
   return (
     <div className='bg-white text-gray-900 container mx-auto mt-16 p-16'>
       <Popup show={showResetPopup} onClose={() => setShowResetPopup(false)} />

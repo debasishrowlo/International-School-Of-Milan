@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-require('dotenv').config()
+import "dotenv/config"
 
 import User from './src/model/user.model.js'
 import Post from './src/model/post.model.js'

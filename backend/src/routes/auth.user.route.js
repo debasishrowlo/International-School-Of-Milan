@@ -1,24 +1,28 @@
 import express from 'express';
-const router = express.Router();
-import User from '../model/user.model.js';
+
 import generateToken from '../middleware/generateToken.js';
-//const bcrypt = require('bcrypt');
-//const isAdmin = require('../middleware/isAdmin.js');
 import verifyToken from '../middleware/verifyToken.js';
+import userDataPermission from '../middleware/userDataPermission.js';
 import bulkRegister from '../controller/bulkRegister.js';
 import upload from '../middleware/multerMiddleware.js';
-import userDataPermission from '../middleware/userDataPermission.js';
-//const { verify } = require('jsonwebtoken');
 
-// Register a user
+import User from '../model/user.model.js';
+
+const router = express.Router();
+
+const daysToMs = (days) => {
+  const millisecondsPerSecond = 1000
+  const secondsPerMinute = 60
+  const minutesPerHour = 60
+  const hoursPerDay = 24
+  return days * hoursPerDay * minutesPerHour * secondsPerMinute * millisecondsPerSecond
+}
 
 // Bulk Register Using Excel
 router.post('/bulkRegister', upload.single('excelFile'), bulkRegister)
+
 // Multi User Route
-
 router.post('/multiRegisterRoute', verifyToken, userDataPermission("admin", "moderator"), async (req, res) => {
-
-  console.log("This is users", req.body);
   const password = "ISM2025";
 
   try {
@@ -43,7 +47,7 @@ router.post('/multiRegisterRoute', verifyToken, userDataPermission("admin", "mod
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    console.log(req.body)
+
     const user = await User.findOne({ username });
     if (!user) {
       return res.status(404).send({ message: 'User Not Found.' });
@@ -54,28 +58,23 @@ router.post('/login', async (req, res) => {
       return res.status(401).send({ message: 'Invalid Password.' });
     }
 
-    // Generate token here
+    const cookieOptions = {
+      expires: new Date(Date.now() + daysToMs(1)),
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    }
+
     const token = await generateToken(user._id)
-    console.log("This is token", token)
-    // const options = {
-    //   httpOnly: true, // enable this only when u have https
-    //   secure: true,
-    //   sameSite: 'lax'
-    // }
-    res.cookie("token", token, {
-      sameSite: 'lax', // Use 'none' for cross-origin in production with secure=true
-      path: '/'
-    });
-    res.cookie("isLoggedIn", true);
-    res.status(200).send({
-      message: 'User logged in successfully!', token, user: {
-        _id: user._id,
-        email: user.email,
-        username: user.username,
-        role: user.role,
-        firstLogin: user.firstLogin,
-      }
-    });
+    res.cookie('token', token, { ...cookieOptions })
+
+    res.cookie("isLoggedIn", true, {
+      ...cookieOptions,
+      httpOnly: false,
+    })
+
+    res
+      .status(200)
+      .send({ message: 'User logged in successfully!' })
   } catch (error) {
     console.error("Failed to Login", error);
     res.status(500).json({ message: "Login Failed!" });
@@ -170,6 +169,7 @@ router.put('/users/:id', async (req, res) => {
     res.status(500).send({ message: "Error Updating Role!" });
   }
 })
+
 // Reset Password
 router.put('/resetPassword', verifyToken, async (req, res) => {
   try {
@@ -201,8 +201,8 @@ router.put('/resetPassword', verifyToken, async (req, res) => {
     })
   }
 })
-//Update password
 
+//Update password
 router.put('/users/password/:id', verifyToken, userDataPermission("admin", "moderator"), async (req, res) => {
   function hashPassword(newPassword) {
     const hashedPass = bcrypt.hash(newPassword, 10)

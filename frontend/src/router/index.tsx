@@ -1,7 +1,9 @@
 //@ts-nocheck
 import { createBrowserRouter } from 'react-router-dom';
-import App from '@/App';
+import Layout from '@/Layout';
 import AuthGuard from '@/router/AuthGuard';
+
+import App from "@/App"
 
 // Page imports
 import Home from '@/pages/home/Home';
@@ -74,46 +76,51 @@ export const createActivitiesRoute = (type: string) => routes.activities.replace
 export const createDashboardActivityRoute = (slug: string) => routes.dashboard_activity.replace(':slug', slug);
 
 // Auth wrapper component
-const AuthProtectedApp = () => (
+const AuthProtectedLayout = () => (
   <AuthGuard>
-    <App />
+    <Layout />
   </AuthGuard>
 );
 
 // Router configuration
 const router = createBrowserRouter([
-  // Public routes with auth
-  {
-    element: <AuthProtectedApp />,
-    children: [
-      { path: routes.home, element: <Home /> },
-      { path: routes.announcements, element: <Announcements /> },
-      { path: routes.activities, element: <Activities /> },
-      { path: routes.activity, element: <Activity /> },
-      { path: routes.news, element: <Posts /> },
-      { path: routes.singleNews, element: <Post /> },
-    ],
-  },
-  // Public routes without auth
   {
     element: <App />,
     children: [
-      { path: routes.login, element: <Login /> },
-      { path: routes.resetPassword, element: <ResetPassword /> },
-    ],
-  },
-  // Protected dashboard routes
-  {
-    element: <AuthProtectedApp />,
-    children: [
+      // Public routes with auth
       {
-        element: <AdminLayout />,
+        element: <AuthProtectedLayout />,
         children: [
-          { path: routes.dashboard, element: <Dashboard /> },
-          { path: routes.dashboard_manageItems, element: <ManageItems /> },
-          { path: routes.dashboard_users, element: <ManageUsers /> },
-          { path: routes.dashboard_news_list, element: <DashboardPosts /> },
-          { path: routes.dashboard_activity, element: <DashboardActivity /> },
+          { path: routes.home, element: <Home /> },
+          { path: routes.announcements, element: <Announcements /> },
+          { path: routes.activities, element: <Activities /> },
+          { path: routes.activity, element: <Activity /> },
+          { path: routes.news, element: <Posts /> },
+          { path: routes.singleNews, element: <Post /> },
+        ],
+      },
+      // Public routes without auth
+      {
+        element: <Layout />,
+        children: [
+          { path: routes.login, element: <Login /> },
+          { path: routes.resetPassword, element: <ResetPassword /> },
+        ],
+      },
+      // Protected dashboard routes
+      {
+        element: <AuthProtectedLayout />,
+        children: [
+          {
+            element: <AdminLayout />,
+            children: [
+              { path: routes.dashboard, element: <Dashboard /> },
+              { path: routes.dashboard_manageItems, element: <ManageItems /> },
+              { path: routes.dashboard_users, element: <ManageUsers /> },
+              { path: routes.dashboard_news_list, element: <DashboardPosts /> },
+              { path: routes.dashboard_activity, element: <DashboardActivity /> },
+            ],
+          },
         ],
       },
     ],

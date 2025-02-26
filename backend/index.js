@@ -30,7 +30,6 @@ app.use(
 
 app.use(cookieParser())
 
-const PORT = process.env.PORT || 3000;
 app.use("/api/posts", postRoutes);
 app.use("/api/announcements", announcementRoutes);
 app.use("/api/activities", activityRoutes);
@@ -43,6 +42,7 @@ app.get('/', (req, res) => {
   res.status(404).send();
 });
 
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
 });

@@ -13,16 +13,13 @@ import "./customCheckbox.css"
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const state = useSelector(state => state)
   const [loginUser, { isLoading: loginLoading }] = useLoginUserMutation();
 
-  console.log(state)
-
   const [message, setMessage] = useState('');
-  const [name, setName] = useState('User');
-  const [surname, setSurname] = useState('Test');
-  const [grade, setGrade] = useState('Admin');
-  const [password, setPassword] = useState('1234');
+  const [name, setName] = useState('');
+  const [surname, setSurname] = useState('');
+  const [grade, setGrade] = useState('');
+  const [password, setPassword] = useState('');
   
   const isLoggedIn = cookies.get("isLoggedIn") !== undefined
 

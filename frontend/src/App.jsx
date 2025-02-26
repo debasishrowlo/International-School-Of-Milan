@@ -1,24 +1,26 @@
+import { useEffect } from "react"
 import { Outlet } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import axios from "axios"
 
-import Navbar from './components/Navbar'
-
-// import './App.css'
+import { handleInvalidToken } from '@/redux/features/auth/authSlice';
 
 function App() {
-  return (
-    <div className='bg-gray-50 min-h-screen flex flex-col'>
-      <Navbar/>
-      <div className='flex-grow'>
-        <Outlet/>
-      </div>
-      <footer className="fixed z-10 bottom-0 w-full py-4 bg-gray-100 text-center text-12 text-neutral-600">
-        <p>
-          All rights reserved to The School of Milan © 
-          <a href="/GeneralConditionsofUsefortheInternationalSchoolofMilanWebsite.pdf" download className="ml-10 font-bold text-blue-600">Download CGU</a>
-        </p>
-      </footer>
-    </div>
-  )
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    axios.interceptors.response.use(
+      response => response,
+      error => {
+        if (error.status === 401) {
+          dispatch(handleInvalidToken())
+        }
+        return error.response
+      }
+    )
+  }, [])
+
+  return <Outlet/>
 }
 
 export default App

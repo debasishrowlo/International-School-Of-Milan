@@ -22,7 +22,6 @@ interface SetUserPayload {
 
 // Constants
 const USER_STORAGE_KEY = 'user';
-const IS_LOGGED_IN_COOKIE = 'isLoggedIn';
 const TOKEN_COOKIE = 'token';
 
 // Utility functions
@@ -40,9 +39,7 @@ const getUserFromStorage = (): User | null => {
 };
 
 const clearAuthData = () => {
-  localStorage.removeItem(USER_STORAGE_KEY);
-  cookies.remove(IS_LOGGED_IN_COOKIE);
-  cookies.remove(TOKEN_COOKIE);
+  cookies.remove("isLoggedIn");
 };
 
 // Initial state function
@@ -72,12 +69,11 @@ const authSlice = createSlice({
       clearAuthData();
     },
 
-    // Add a reducer to handle token expiration or invalid token scenarios
     handleInvalidToken: (state) => {
       state.user = null;
       state.isLoggedIn = false;
       clearAuthData();
-    }
+    },
   }
 });
 

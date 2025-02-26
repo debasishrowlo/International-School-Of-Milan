@@ -9,7 +9,6 @@ import CommentCards from './comments/CommentCards';
 import { trimWithEllipsis } from "@/utils"
 
 import { apiRoutes, createSingleNewsRoute } from "@/router"
-import { clearUserData } from "@/common"
 import { logout as clearUserDataFromRedux } from '@/redux/features/auth/authSlice'
 
 import { Post } from "@/types"
@@ -25,7 +24,6 @@ const SinglePost = () => {
   console.log(relatedPosts)
 
   const logout = () => {
-    clearUserData()
     dispatch(clearUserDataFromRedux());
   }
 

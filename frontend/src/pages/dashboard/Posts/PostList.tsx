@@ -1,8 +1,8 @@
 import { FaPen, FaTrash } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux"
 import { Link } from "react-router-dom"
+
 import { RootState } from "@/redux/store"
-import { clearUserData } from "@/common"
 import { logout as clearUserDataFromRedux } from '@/redux/features/auth/authSlice';
 import * as u from "@/utils"
 import { apiRoutes, createSingleNewsRoute } from "@/router"
@@ -21,9 +21,9 @@ const PostList = ({
   const dispatch = useDispatch()
 
   const logout = () => {
-    clearUserData()
     dispatch(clearUserDataFromRedux());
   }
+
   const { user } = useSelector((state: RootState) => state.auth)
   console.log("This is user from  delete Post", user)
 

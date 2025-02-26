@@ -6,7 +6,6 @@ import * as yup from "yup"
 import Editor from "@/components/Editor"
 
 import { apiRoutes } from "@/router"
-import { clearUserData } from "@/common"
 import { logout as clearUserDataFromRedux } from '@/redux/features/auth/authSlice';
 
 import { Post } from "@/types"
@@ -98,7 +97,6 @@ const EditPost = ({
   };
 
   const logout = () => {
-    clearUserData()
     dispatch(clearUserDataFromRedux());
   }
 

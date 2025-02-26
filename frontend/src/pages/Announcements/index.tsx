@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { useNavigate } from 'react-router-dom'
 import { useFormik } from "formik"
+import { useDispatch } from "react-redux"
 import * as yup from "yup"
 
 import Modal from "@/components/Modal"
@@ -8,8 +8,8 @@ import Editor from "@/components/Editor"
 import Avatar from "../../components/Avatar/Avatar"
 import RichTextPostCreator from "../../components/RichTextEditor/RichTextEditor"
 
-import { clearUserData } from "../../common"
 import { routes } from "@/router"
+import { logout } from "@/redux/features/auth/authSlice"
 
 import "./Announcement.css"
 
@@ -22,7 +22,7 @@ type Annoucement = {
 }
 
 const Announcements = () => {
-  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const [announcements, setAnnouncements] = useState<Annoucement[]>([])
   const [loading, setLoading] = useState(false)
@@ -31,8 +31,7 @@ const Announcements = () => {
   const [newComment, setNewComment] = useState("")
 
   const localLogout = () => {
-    clearUserData()
-    navigate(routes.login)
+    dispatch(logout())
   }
 
   const form = useFormik({

@@ -34,8 +34,9 @@ const Login = () => {
 
     try {
       const response = await loginUser(data).unwrap();
-      // const { user } = response;
-      dispatch(setUser({ isLoggedIn: true }))
+      const { user } = response;
+      dispatch(setUser({ user, isLoggedIn: true }))
+      localStorage.setItem("user", JSON.stringify(user))
       navigate('/');
     } catch (err) {
       console.log(err)

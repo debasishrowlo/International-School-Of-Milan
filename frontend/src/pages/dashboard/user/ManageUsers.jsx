@@ -1,12 +1,15 @@
 import { useState } from 'react'
-import { useDeleteUserMutation, useGetUserProfileQuery } from '../../../redux/features/auth/authapi'
 import { MdEdit } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
-import UpdateUserModel from './UpdateUserModel';
-import Modal from '@/components/Modal';
-import "./CreateUser.css";
 import axios from 'axios'
 import { useSelector } from 'react-redux';
+
+import { useDeleteUserMutation, useGetUserProfileQuery } from '../../../redux/features/auth/authapi'
+import UpdateUserModel from './UpdateUserModel';
+
+import Modal from '@/components/Modal';
+import "./CreateUser.css";
+
 const ManageUsers = () => {
   const { user } = useSelector((state) => state.auth);
   const currentLoggedUser = user
@@ -92,14 +95,14 @@ const ManageUsers = () => {
   }
 
   const handleAddUserField = () => {
-    setUsers([...users, { username: '', grade: '', role: '' }]);
-  };
+    setUsers([...users, { username: '', grade: '', role: '' }])
+  }
 
   const handleUserChange = (index, field, value) => {
     const newUsers = [...users];
     newUsers[index][field] = value;
     setUsers(newUsers); // Mettre à jour l'utilisateur dans la liste
-  };
+  }
 
   const createMultipleUsers = async () => {
     try {
@@ -115,8 +118,8 @@ const ManageUsers = () => {
     } catch (error) {
       throw new Error('Error creating users:', error);
     }
-
   }
+
   const handleCreateUsers = () => {
     const createdUsers = users.map(user => ({
       username: `${user.name}${user.surname}${user.grade}`,
@@ -126,8 +129,7 @@ const ManageUsers = () => {
     setUsers([{ name: '', surname: '', grade: '', role: 'student' }]);
     setShowModal(false);
     return createdUsers;
-
-  };
+  }
 
   const closemodal = () => {
     setShowModal(false);
@@ -250,6 +252,7 @@ const ManageUsers = () => {
                   placeholder="Name"
                   value={currentUser.name}
                   onChange={(e) => handleUserChange(index, 'name', e.target.value)}
+                  autoFocus
                 />
                 <input
                   className='cr-input'

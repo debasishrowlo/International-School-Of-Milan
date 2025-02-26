@@ -8,7 +8,6 @@ import Avatar from './Avatar/Avatar';
 
 import { useLogoutUserMutation } from '../redux/features/auth/authapi';
 import { logout } from '../redux/features/auth/authSlice';
-import { clearUserData } from "../common"
 import { navbarActivities } from "@/constants"
 
 import { createActivitiesRoute } from "@/router"
@@ -21,7 +20,7 @@ const navLists = [
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user } = useSelector((state) => state.auth);
+  const { user, isLoggedIn } = useSelector(state => state.auth);
   const [prevScrollPos, setPrevScrollPos] = useState(window.pageYOffset);
   const [visible, setVisible] = useState(true);
 
@@ -33,7 +32,6 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       await logoutUserMutation().unwrap();
-      clearUserData()
       dispatch(logout());
     } catch (error) {
       console.error(error)
@@ -128,7 +126,7 @@ const Navbar = () => {
             </button>
           </li>
 
-          {user ? (
+          {isLoggedIn ? (
             <li className='flex items-center gap-3'>
               <button
                 onClick={handleLogout}

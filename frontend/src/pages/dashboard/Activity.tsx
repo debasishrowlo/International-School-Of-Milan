@@ -10,7 +10,6 @@ import AddButton from '@/components/AddButton/AddButton';
 import Editor from "@/components/Editor"
 import Modal from '@/components/Modal';
 
-import { clearUserData } from "@/common"
 import { logout as clearUserDataFromRedux } from '@/redux/features/auth/authSlice';
 import { routes, apiRoutes, createActivityRoute } from "@/router"
 import { backendUrl } from "@/constants"
@@ -178,7 +177,6 @@ const ActivityPage = () => {
   });
 
   const logout = () => {
-    clearUserData();
     dispatch(clearUserDataFromRedux());
   };
 
@@ -199,9 +197,7 @@ const ActivityPage = () => {
   };
 
   const localLogout = () => {
-    clearUserData();
     dispatch(clearUserDataFromRedux());
-    navigate(routes.login);
   };
 
   const deleteActivity = async (activity: Cas) => {

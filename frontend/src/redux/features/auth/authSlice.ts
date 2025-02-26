@@ -20,34 +20,29 @@ interface SetUserPayload {
   isLoggedIn: boolean;
 }
 
-// Constants
-const USER_STORAGE_KEY = 'user';
-const TOKEN_COOKIE = 'token';
-
-// Utility functions
-const getTokenFromCookies = (): string | null => {
-  return cookies.get(TOKEN_COOKIE) || null;
-};
-
-const getUserFromStorage = (): User | null => {
-  try {
-    const userData = localStorage.getItem(USER_STORAGE_KEY);
-    return userData ? JSON.parse(userData) : null;
-  } catch {
-    return null;
-  }
-};
-
 const clearAuthData = () => {
   cookies.remove("isLoggedIn");
+  localStorage.removeItem("user")
 };
 
 // Initial state function
 const getInitialState = (): AuthState => {
-  return {
+  const initialState = {
     user: null,
-    isLoggedIn: cookies.get("isLoggedIn") !== undefined,
+    isLoggedIn: false,
   }
+
+  const isLoggedIn = cookies.get("isLoggedIn") !== undefined
+  if (isLoggedIn) {
+    const userData = localStorage.getItem("user")
+
+    if (userData) {
+      initialState.user = JSON.parse(userData)
+      initialState.isLoggedIn = true
+    }
+  }
+
+  return initialState
 };
 
 // Create the slice
@@ -56,20 +51,12 @@ const authSlice = createSlice({
   initialState: getInitialState(),
   reducers: {
     setUser: (state, action: PayloadAction<SetUserPayload>) => {
-      const { isLoggedIn } = action.payload;
+      const { user, isLoggedIn } = action.payload;
+      state.user = user
       state.isLoggedIn = isLoggedIn;
     },
 
     logout: (state) => {
-      // Clear state
-      state.user = null;
-      state.isLoggedIn = false;
-
-      // Clear persisted data
-      clearAuthData();
-    },
-
-    handleInvalidToken: (state) => {
       state.user = null;
       state.isLoggedIn = false;
       clearAuthData();
@@ -78,7 +65,7 @@ const authSlice = createSlice({
 });
 
 // Export actions and reducer
-export const { setUser, logout, handleInvalidToken } = authSlice.actions;
+export const { setUser, logout } = authSlice.actions;
 export default authSlice.reducer;
 
 // Type exports

@@ -1,17 +1,22 @@
 import express from 'express';
-const router = express.Router();
+
 import CasPost from '../model/caspost.model.js';
 import CASResponse from '../model/casResponse.model.js';
 import verifyToken from '../middleware/verifyToken.js';
 import isAdmin from "../middleware/isAdmin.js";
 
+const router = express.Router();
+
 // Create A CAS
 router.post("/create", verifyToken, isAdmin, async (req, res) => {
+  // TODO: validation
+
   try {
-    console.log("Post Data From API:", req.body)
-    console.log("User Data From API:", req.user)
-    const newCasPost = new CasPost({ ...req.body, author: req.user._id, username: req.user.username }); // use author: req.userId after making verify token
-    await newCasPost.save();
+    const newCasPost = await CasPost.create({
+      ...req.body,
+      author: req.user.id, 
+      username: req.user.username
+    });
     res.status(201).send({
       message: "Cas Created Successfully",
       post: newCasPost
@@ -24,6 +29,7 @@ router.post("/create", verifyToken, isAdmin, async (req, res) => {
   }
 
 })
+
 // Get all CAS
 router.get('/', async (req, res) => {
   try {
@@ -49,16 +55,14 @@ router.get('/', async (req, res) => {
       }
     }
 
-
-
     const cas = await CasPost.find(query).populate('author', 'email').sort({ createdAt: -1 });
-    res.status(200).send(cas);
 
+    res.status(200).send(cas);
   } catch (error) {
     console.error("Error Finding CAS:", error);
     res.status(500).send({ message: "Error Finding Cas" })
   }
-});
+})
 
 // Get CAS by ID
 router.get('/:id', async (req, res) => {
@@ -82,7 +86,6 @@ router.get('/:id', async (req, res) => {
     res.status(500).send({ message: "Error Fetching Single Cas" });
   }
 })
-
 
 // Update a post
 router.patch("/update/:id", verifyToken, async (req, res) => {
@@ -129,7 +132,4 @@ router.delete("/:id", verifyToken, async (req, res) => {
   }
 })
 
-
-
 export default router;
-

@@ -8,7 +8,7 @@ class UnauthorizedError extends Error {
   }
 }
 
-const verifyToken = (req, res, next) => {
+const verifyToken = async (req, res, next) => {
   try {
     const token = req.cookies.token
 
@@ -23,7 +23,12 @@ const verifyToken = (req, res, next) => {
       throw new UnauthorizedError('Invalid token payload');
     }
 
-    req.user = decoded;
+    const user = await User.findById(decoded.userId)
+    if (!user) {
+      throw new UnauthorizedError()
+    }
+
+    req.user = user;
 
     next();
   } catch (error) {

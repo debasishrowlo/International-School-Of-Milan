@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { FaPen, FaTrash } from "react-icons/fa";
 import { useFormik, FormikValues } from "formik"
 import * as yup from "yup"
+import axios from "axios"
 
 import AddButton from '@/components/AddButton/AddButton';
 import Editor from "@/components/Editor"
@@ -79,30 +80,22 @@ const ActivityPage = () => {
       try {
         setIsLoading(true);
 
-        const response = await fetch(apiRoutes.createActivity, {
-          method: 'POST',
-          credentials: 'include',
-          body: JSON.stringify({
-            type: slug,
-            title: values.title,
-            coverImageUrl: values.coverImageUrl,
-            content: values.content,
-            description: values.description,
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
+        const response = await axios.post(apiRoutes.createActivity, {
+          type: slug,
+          title: values.title,
+          coverImageUrl: values.coverImageUrl,
+          content: values.content,
+          description: values.description,
+        }, {
+          withCredentials: true,
         });
 
-        if (!response.ok) {
-          if (response.status === 401) {
-            localLogout();
-          }
-
+        if (response.status === 401) {
+          localLogout();
           return;
         }
 
-        const activity = await response.json();
+        const activity = await response.data.post
         setActivities([...activities, activity]);
         setCreateModalOpen(false);
       } catch (error) {

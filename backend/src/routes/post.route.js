@@ -13,7 +13,7 @@ router.get('/', verifyToken, async (req, res) => {
     const { type } = req.query;
 
     if (!type) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "Type missing",
       })
     }
@@ -45,12 +45,12 @@ router.get('/', verifyToken, async (req, res) => {
       comments: [],
     }))
 
-    res.status(200).send(posts)
+    return res.status(200).send(posts)
   } catch (error) {
     console.error("Error fetching posts:", error)
     res.status(500).send({ message: "Error fetching posts" })
   }
-});
+})
 
 // Get Post by ID
 router.get('/:id',verifyToken, async (req, res) => {

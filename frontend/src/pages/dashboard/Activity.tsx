@@ -213,16 +213,9 @@ const ActivityPage = () => {
 
   const fetchData = async () => {
     const response = await axios.get(apiRoutes.getPosts, {
-      params: {
-        type: slug,
-      },
+      params: { type: slug },
       withCredentials: true,
     })
-
-    if (response.status === 401) {
-      localLogout()
-      return
-    }
 
     setActivities(response.data)
     setLoading(false)

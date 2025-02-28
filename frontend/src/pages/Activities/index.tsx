@@ -1,5 +1,8 @@
 import { ChangeEvent, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import axios from "axios"
+
+import { apiRoutes } from "@/router"
 
 import PostList from './PostList'
 import SearchPost from './SearchPost'
@@ -9,41 +12,27 @@ import { Activity } from "@/types"
 const Activities = () => {
   const { type } = useParams()
 
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
-  const [query, setQuery] = useState({ search: "", category: "" });
+  const [search, setSearch] = useState("")
+  const [category, setCategory] = useState("")
+  const [query, setQuery] = useState({ search: "", category: "" })
   const [activities, setActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(true)
 
-  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => setSearch(e.target.value);
-  const handleSearch = () => setQuery({ search, category });
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)
+  const handleSearch = () => setQuery({ search, category })
 
   const fetchData = async () => {
-    let url = `${import.meta.env.VITE_BACKEND_URL}/activities/${type}`
+    const response = await axios.get(apiRoutes.getPosts, {
+      params: { type },
+      withCredentials: true,
+    })
 
-    try {
-      const response = await fetch(url, {
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        }
-      })
+    const activities = response.data
 
-      if (!response.ok) {
-        return []
-      }
-
-      const activities = await response.json()
-
-      setActivities(activities)
-      setLoading(false)
-    } catch (error) {
-      console.error(error)
-
-    }
-
+    setActivities(activities)
+    setLoading(false)
   }
-  console.log("Activityed", activities)
+
   useEffect(() => {
     fetchData()
   }, [type])
@@ -72,7 +61,7 @@ const Activities = () => {
         <AddPost closeModalOnSubmit={closeModal} />
       </Modal> */}
     </div>
-  );
-};
+  )
+}
 
 export default Activities

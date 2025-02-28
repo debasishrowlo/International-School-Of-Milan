@@ -1,27 +1,34 @@
 import { useState } from 'react'
 import { MdEdit } from "react-icons/md";
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
 import { useSelector } from 'react-redux';
 
+import { apiRoutes } from "@/router"
 import { useDeleteUserMutation, useGetUserProfileQuery } from '../../../redux/features/auth/authapi'
 import UpdateUserModel from './UpdateUserModel';
 
 import Modal from '@/components/Modal';
 import "./CreateUser.css";
 
+const roles = [
+  "admin",
+  "moderator",
+  "creator",
+  "student",
+]
+
 const ManageUsers = () => {
   const { user } = useSelector((state) => state.auth);
-  const currentLoggedUser = user
+
   const [selectedUser, setSelectedUser] = useState(null);
   const [file, setFile] = useState(null)
   const [isModelOpen, setIsModelOpen] = useState();
   const [isExcelModelOpen, setIsExcelModelOpen] = useState(false);
-  const { data, error, isLoading, refetch } = useGetUserProfileQuery();
-  const [deleteUser] = useDeleteUserMutation();
   const [users, setUsers] = useState([{ name: '', surname: '', grade: '', role: 'student' }]); // Liste des utilisateurs à créer
   const [showModal, setShowModal] = useState(false); // Pour contrôler l'affichage de la modal
 
+  const { data, error, isLoading, refetch } = useGetUserProfileQuery();
+  const [deleteUser] = useDeleteUserMutation();
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -39,6 +46,7 @@ const ManageUsers = () => {
 
     setFile(selectedFile); // Update the state with the selected file
   };
+
   const handleFileSubmit = async (e) => {
     e.preventDefault();
 
@@ -49,9 +57,7 @@ const ManageUsers = () => {
     const formData = new FormData();
     formData.append("excelFile", file);
 
-
     try {
-
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/bulkRegister`, formData, {
         withCredentials: true,
         headers: {
@@ -70,6 +76,7 @@ const ManageUsers = () => {
       alert("Failed to upload file. Please try again.");
     }
   };
+
   const handleDelete = async (id) => {
     try {
       const response = await deleteUser(id).unwrap();
@@ -90,6 +97,7 @@ const ManageUsers = () => {
     setIsModelOpen(false);
     setSelectedUser(null);
   };
+
   const handleExcelModel = () => {
     setIsExcelModelOpen(true);
   }
@@ -101,7 +109,7 @@ const ManageUsers = () => {
   const handleUserChange = (index, field, value) => {
     const newUsers = [...users];
     newUsers[index][field] = value;
-    setUsers(newUsers); // Mettre à jour l'utilisateur dans la liste
+    setUsers(newUsers);
   }
 
   const createMultipleUsers = async () => {
@@ -110,9 +118,11 @@ const ManageUsers = () => {
       if (!multiUserData) {
         return "No User Data Found";
       }
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/multiRegisterRoute`, multiUserData, {
-        withCredentials: true
-      })
+      const response = await axios.post(
+        apiRoutes.bulkCreateUsers,
+        multiUserData,
+        { withCredentials: true }
+      )
       refetch();
       console.log("Resposne ", response)
     } catch (error) {
@@ -121,7 +131,12 @@ const ManageUsers = () => {
   }
 
   const handleCreateUsers = () => {
-    const createdUsers = users.map(user => ({
+    const createdUsers = users.filter(user => (
+      user.name !== "" &&
+      user.surname !== "" &&
+      user.grade !== "" &&
+      roles.includes(user.role)
+    )).map(user => ({
       username: `${user.name}${user.surname}${user.grade}`,
       grade: user.grade,
       role: user.role
@@ -151,7 +166,8 @@ const ManageUsers = () => {
                 </div>
                 <div className="relative w-full px-4 max-w-full flex-grow flex-1 text-right">
                   <button className="bg-indigo-500 text-white active:bg-indigo-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">See all</button>
-                </div>                <div className="relative w-full px-4 max-w-full flex-grow flex-1 text-right">
+                </div>
+                <div className="relative w-full px-4 max-w-full flex-grow flex-1 text-right">
                   <button className="bg-indigo-500 text-white active:bg-indigo-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button"
                     onClick={handleExcelModel}
                   >Upload Excel Sheet</button>
@@ -261,7 +277,6 @@ const ManageUsers = () => {
                   placeholder="Surname"
                   onChange={(e) => handleUserChange(index, 'surname', e.target.value)}
                 />
-
                 <input
                   className='cr-input'
                   type="text"
@@ -269,7 +284,6 @@ const ManageUsers = () => {
                   placeholder="Grade"
                   onChange={(e) => handleUserChange(index, 'grade', e.target.value)}
                 />
-
                 <select
                   className="cr-input"
                   value={currentUser.role}
@@ -289,7 +303,6 @@ const ManageUsers = () => {
                     </>
                   ) : null}
                 </select>
-
               </div>
             ))}
           </div>

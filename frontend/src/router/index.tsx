@@ -53,6 +53,8 @@ export const routes = {
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export const apiRoutes = {
+  bulkCreateUsers: `${backendUrl}/auth/multiRegisterRoute`,
+
   // Posts
   createPost: `${backendUrl}/posts`,
   findPost: (postId: string) => `${backendUrl}/posts/${postId}`,
@@ -87,7 +89,6 @@ const router = createBrowserRouter([
   {
     element: <App />,
     children: [
-      // Public routes with auth
       {
         element: <AuthProtectedLayout />,
         children: [
@@ -99,7 +100,6 @@ const router = createBrowserRouter([
           { path: routes.singleNews, element: <Post /> },
         ],
       },
-      // Public routes without auth
       {
         element: <Layout />,
         children: [

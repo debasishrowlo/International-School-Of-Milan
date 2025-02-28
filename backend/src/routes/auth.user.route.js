@@ -101,16 +101,13 @@ router.post('/logout', async (req, res) => {
 // Get  users
 router.get('/users', verifyToken, userDataPermission("admin", "moderator"), async (req, res) => {
   try {
-
     if (req.user.role == "admin") {
       const users = await User.find({
         role: {
           $ne: "admin"
-        }
-
-      })
+        },
+      }).select("-password")
       res.status(200).send({ message: "Users Found Sucessfully", users })
-
     } else {
       const users = await User.find({
         where: {
@@ -118,14 +115,12 @@ router.get('/users', verifyToken, userDataPermission("admin", "moderator"), asyn
             $nin: ["admin", "moderator"]
           }
         }
-      })
+      }).select("-password")
       res.status(200).send({ message: "Users Found Sucessfully", users })
     }
-
   } catch (error) {
     console.error("Error Fetching Users.", error);
     res.status(500).send({ message: "Failed to fetch users!" });
-
   }
 })
 

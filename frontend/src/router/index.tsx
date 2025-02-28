@@ -56,6 +56,7 @@ export const apiRoutes = {
   bulkCreateUsers: `${backendUrl}/auth/multiRegisterRoute`,
 
   // Posts
+  getPosts: `${backendUrl}/posts`,
   createPost: `${backendUrl}/posts`,
   findPost: (postId: string) => `${backendUrl}/posts/${postId}`,
   updatePost: (post: TPost) => `${backendUrl}/posts/${post.id}`,
@@ -64,7 +65,7 @@ export const apiRoutes = {
 
   // CAS
   fineCasPost: (postId: string) => `${backendUrl}/cas/${postId}`,
-  createActivity: `${backendUrl}/cas/create`,
+  createActivity: `${backendUrl}/posts`,
 
   // Activities
   updateActivity: (activityId: string) => `${backendUrl}/activities/${activityId}`,
@@ -73,7 +74,10 @@ export const apiRoutes = {
 
 // Route helper functions
 export const createSingleNewsRoute = (id: string) => routes.singleNews.replace(':id', id);
-export const createActivityRoute = (activity: TActivity) => routes.activity.replace(':id', activity.id);
+export const createActivityRoute = (activity: TActivity) => {
+  console.log(routes.activity, activity)
+  return routes.activity.replace(':id', activity.id)
+}
 export const createActivitiesRoute = (type: string) => routes.activities.replace(':type', type);
 export const createDashboardActivityRoute = (slug: string) => routes.dashboard_activity.replace(':slug', slug);
 

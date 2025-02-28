@@ -9,8 +9,6 @@ const router = express.Router();
 
 // Create A CAS
 router.post("/create", verifyToken, isAdmin, async (req, res) => {
-  // TODO: validation
-
   try {
     const newCasPost = await CasPost.create({
       ...req.body,
@@ -69,13 +67,13 @@ router.get('/:id', async (req, res) => {
   try {
     // console.log(req.params.id);
     const casId = req.params.id;
-    console.log(casId);
     const cas = await CasPost.findById(casId);
     if (!cas) {
       return res.status(404).send({ message: "Cas Not Found" })
     }
 
-    const casresponse = await CASResponse.find({ casId: casId }).populate('user', "username email");
+    const casresponse = await CasPost.findById(casId).populate('author', "username email")
+    console.log(casresponse)
     res.status(200).send({
       message: "CAS Retrieved Successfully",
       post: cas,

@@ -2,46 +2,46 @@ import { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useParams, Link } from "react-router-dom"
 import { useNavigate } from 'react-router-dom'
-import { FaPen, FaTrash } from "react-icons/fa";
+import { FaPen, FaTrash } from "react-icons/fa"
 import { useFormik, FormikValues } from "formik"
 import * as yup from "yup"
 import axios from "axios"
 
-import AddButton from '@/components/AddButton/AddButton';
+import AddButton from '@/components/AddButton/AddButton'
 import Editor from "@/components/Editor"
-import Modal from '@/components/Modal';
+import Modal from '@/components/Modal'
 
-import { logout as clearUserDataFromRedux } from '@/redux/features/auth/authSlice';
-import { routes, apiRoutes, createActivityRoute } from "@/router"
+import { logout as clearUserDataFromRedux } from '@/redux/features/auth/authSlice'
+import { apiRoutes, createActivityRoute } from "@/router"
 import { backendUrl } from "@/constants"
-import * as u from '@/utils';
+import * as u from '@/utils'
 
-import { Cas } from '@/types';
-import { RootState } from '@/redux/store';
+import { Cas } from '@/types'
+import { RootState } from '@/redux/store'
 
 const inputProps = (form: FormikValues, fieldName: string) => {
   return {
     value: form.values[fieldName],
     onChange: form.handleChange,
     onBlur: form.handleBlur,
-  };
-};
+  }
+}
 
 const Error = ({ form, fieldName }: { form: FormikValues; fieldName: string }) => {
   if (form.touched[fieldName] && form.errors[fieldName]) {
-    return <p className='mt-8 text-14 text-red-400'>{form.errors[fieldName]}</p>;
+    return <p className='mt-8 text-14 text-red-400'>{form.errors[fieldName]}</p>
   }
 
-  return null;
-};
+  return null
+}
 
 const ActivityPage = () => {
-  const { slug } = useParams();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { slug } = useParams()
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { user } = useSelector((state: RootState) => state.auth)
 
-  const titleRef = useRef<HTMLInputElement>(null);
+  const titleRef = useRef<HTMLInputElement>(null)
 
   const [activities, setActivities] = useState<Cas[]>([{
     _id: '',
@@ -55,13 +55,13 @@ const ActivityPage = () => {
       id: '',
       username: '',
     }
-  }]);
-  const [loading, setLoading] = useState(true);
-  const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [editingActivity, setEditingActivity] = useState<Cas | null>(null);
+  }])
+  const [loading, setLoading] = useState(true)
+  const [createModalOpen, setCreateModalOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [editingActivity, setEditingActivity] = useState<Cas | null>(null)
 
-  const editModalOpen = editingActivity !== null;
+  const editModalOpen = editingActivity !== null
 
   const createForm = useFormik({
     initialValues: {
@@ -76,10 +76,10 @@ const ActivityPage = () => {
       coverImageUrl: yup.string().required('Cover image is required'),
       description: yup.string().required('Description is required'),
     }),
-    onSubmit: async (values) => {
+    onSubmit: async (values, { resetForm }) => {
       try {
-        setIsLoading(true);
-
+        setIsLoading(true)
+        
         const response = await axios.post(apiRoutes.createActivity, {
           type: slug,
           title: values.title,
@@ -88,23 +88,19 @@ const ActivityPage = () => {
           description: values.description,
         }, {
           withCredentials: true,
-        });
-
-        if (response.status === 401) {
-          localLogout();
-          return;
-        }
+        })
 
         const activity = await response.data.post
-        setActivities([...activities, activity]);
-        setCreateModalOpen(false);
+        setActivities([...activities, activity])
+        setCreateModalOpen(false)
+        resetForm()
       } catch (error) {
-        console.log('Failed to submit Post', error);
+        console.log('Failed to submit Post', error)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
     },
-  });
+  })
 
   const editForm = useFormik({
     initialValues: {
@@ -122,10 +118,10 @@ const ActivityPage = () => {
     onSubmit: async (values) => {
       try {
         if (editingActivity === null) {
-          return;
+          return
         }
 
-        setIsLoading(true);
+        setIsLoading(true)
 
         const response = await fetch(apiRoutes.updateActivity(editingActivity._id), {
           method: 'PUT',
@@ -139,109 +135,105 @@ const ActivityPage = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-        });
+        })
 
         if (!response.ok) {
           if (response.status === 401) {
-            logout();
+            logout()
           }
 
-          return;
+          return
         }
 
-        const updatedActivity = await response.json();
+        const updatedActivity = await response.json()
 
         const updatedActivities = activities.map((activity) => {
           if (activity._id !== updatedActivity._id) {
-            return activity;
+            return activity
           }
 
-          return { ...updatedActivity };
-        });
+          return { ...updatedActivity }
+        })
 
-        setActivities(updatedActivities);
-        setEditingActivity(null);
+        setActivities(updatedActivities)
+        setEditingActivity(null)
       } catch (error) {
-        console.log('Failed to submit Post', error);
+        console.log('Failed to submit Post', error)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
     },
-  });
+  })
 
   const logout = () => {
-    dispatch(clearUserDataFromRedux());
-  };
+    dispatch(clearUserDataFromRedux())
+  }
 
   const removeActivityFromList = (activity: Cas) => {
-    setActivities(activities.filter((a) => a._id !== activity._id));
-  };
+    setActivities(activities.filter((a) => a._id !== activity._id))
+  }
 
   const editActivity = (activity: any) => {
-    setEditingActivity(activity);
-    editForm.setFieldValue('title', activity.title);
-    editForm.setFieldValue('content', activity.content);
-    editForm.setFieldValue('coverImageUrl', activity.coverImageUrl);
-    editForm.setFieldValue('description', activity.description);
-  };
+    setEditingActivity(activity)
+    editForm.setFieldValue('title', activity.title)
+    editForm.setFieldValue('content', activity.content)
+    editForm.setFieldValue('coverImageUrl', activity.coverImageUrl)
+    editForm.setFieldValue('description', activity.description)
+  }
 
   const closeEditModal = () => {
-    setEditingActivity(null);
-  };
+    setEditingActivity(null)
+  }
 
   const localLogout = () => {
-    dispatch(clearUserDataFromRedux());
-  };
+    dispatch(clearUserDataFromRedux())
+  }
 
   const deleteActivity = async (activity: Cas) => {
     console.log("Activity", activity)
-    const url = `${backendUrl}/cas/${activity._id}/`;
+    const url = `${backendUrl}/cas/${activity._id}/`
     if (confirm('Are you sure you want to delete this activity?')) {
 
       const response = await fetch(url, {
         method: 'DELETE',
         credentials: 'include',
-      });
+      })
 
       if (!response.ok) {
         if (response.status === 401) {
-          localLogout();
+          localLogout()
         }
 
-        return;
+        return
       }
 
-      removeActivityFromList(activity);
+      removeActivityFromList(activity)
     }
-  };
+  }
 
   const fetchData = async () => {
-    const url = `${backendUrl}/cas/`;
-    const response = await fetch(url, {
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await axios.get(apiRoutes.getPosts, {
+      params: {
+        type: slug,
       },
-    });
+      withCredentials: true,
+    })
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        localLogout();
-      }
-
-      return;
+    if (response.status === 401) {
+      localLogout()
+      return
     }
 
-    const activities = await response.json();
-
-    setActivities(activities);
-    setLoading(false);
-  };
+    setActivities(response.data)
+    setLoading(false)
+  }
 
   useEffect(() => {
-    fetchData();
-  }, [slug]);
-  if (user === null) return null;
+    fetchData()
+  }, [slug])
+
+  if (user === null) return null
+
   return (
     <div className='mt-32 grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-32'>
       {loading ? (
@@ -251,7 +243,7 @@ const ActivityPage = () => {
           {activities && (activities?.length > 0) ? (
             <>
               {activities && activities?.map((activity: any) => (
-                <div className='relative' key={activity._id}>
+                <div className='relative' key={activity.id}>
                   <div className='absolute top-12 right-12 flex'>
                     <button
                       type='button'
@@ -312,7 +304,10 @@ const ActivityPage = () => {
             <div className='flex flex-col md:flex-row justify-between items-start gap-16'>
               <div className='md:w-2/3 w-full'>
                 <p className='font-semibold text-20 mb-20 text-zinc-800'>Content Section</p>
-                <Editor content={createForm.values.content} setContent={(content) => createForm.setFieldValue('content', content)} />
+                <Editor
+                  content={createForm.values.content}
+                  setContent={(content) => createForm.setFieldValue('content', content)}
+                />
                 <Error form={createForm} fieldName='content' />
               </div>
               <div className='md:w-1/3 w-full border p-20 space-y-20' style={{ maxHeight: '400px', overflowY: 'scroll' }}>
@@ -446,7 +441,7 @@ const ActivityPage = () => {
         </div>
       </Modal>
     </div>
-  );
-};
+  )
+}
 
 export default ActivityPage

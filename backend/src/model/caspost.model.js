@@ -16,13 +16,22 @@ const CasPostSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
-  }, username: {
+  },
+  username: {
     type: String,
     required: true
   },
   createdAt: {
     type: Date,
     default: Date.now,
+  }
+})
+
+CasPostSchema.set("toJSON", {
+  transform: (doc, ret) => {
+    ret.id = ret._id
+    delete ret._id
+    delete ret.__v
   }
 })
 

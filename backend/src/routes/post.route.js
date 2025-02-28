@@ -10,29 +10,33 @@ import userDataPermission from '../middleware/userDataPermission.js';
 // Get all Posts
 router.get('/', verifyToken, async (req, res) => {
   try {
-    const { search, category } = req.query;
-    console.log(search);
+    const { type } = req.query;
 
-    let query = {}
-
-    if (search) {
-      query = {
-        ...query,
-        $or: [
-          { title: { $regex: search, $options: 'i' } },
-          { content: { $regex: search, $options: 'i' } }
-        ]
-      }
+    if (!type) {
+      res.status(400).json({
+        message: "Type missing",
+      })
     }
 
-    if (category) {
-      query = {
-        ...query,
-        category: category
-      }
-    }
+    // if (search) {
+    //   query = {
+    //     ...query,
+    //     $or: [
+    //       { title: { $regex: search, $options: 'i' } },
+    //       { content: { $regex: search, $options: 'i' } }
+    //     ]
+    //   }
+    // }
 
-    const postsResult = await Post.find(query)
+    // if (category) {
+    //   query = {
+    //     ...query,
+    //     category,
+    //   }
+    // }
+
+    const postsResult = await Post
+      .find({ type })
       .populate({ path: 'author', select: "username" })
       .sort({ createdAt: -1 })
 
@@ -97,27 +101,22 @@ router.get("/related/:id", async (req, res) => {
 router.post("/", verifyToken, userDataPermission("admin", "moderator","creator"), async (req, res) => {
   try {
     // validate
-    console.log(req.body)
 
-    const post = await Post.create({
+    const newPost = new Post({
+      type: req.body.type,
       title: req.body.title,
       coverImageUrl: req.body.coverImageUrl,
       content: req.body.content,
       description: req.body.description,
-      author: req.user.userId,
-      username: req.user.username
+      author: req.user.id,
     })
+
+    const post = await newPost.save()
+    await post.populate("author", "username role")
 
     res.status(201).send({
       message: "Post Created Successfully",
-      post: {
-        ...post.toJSON(),
-        author: {
-          username: req.user.username,
-          role:req.user.role,
-          id:req.user.userId
-        },
-      },
+      post,
     })
   } catch (error) {
     console.error("Error Creating Post:", error);
@@ -127,40 +126,40 @@ router.post("/", verifyToken, userDataPermission("admin", "moderator","creator")
 
 // Update a post
 router.put("/:id", verifyToken,userDataPermission("admin", "moderator","creator"), async (req, res) => {
-    const postId = req.params.id;
-    const userId = req.user.id; // Assuming the user ID is stored in req.user.id
-    const userRole = req.user.role;
+  const postId = req.params.id;
+  const userId = req.user.id; // Assuming the user ID is stored in req.user.id
+  const userRole = req.user.role;
   try {
-       let updateCondition = { _id: postId };
+    let updateCondition = { _id: postId };
 
-        if (userRole == "admin") {
-          console.log("inside admin condition...")
-            // Admin can update any post
-            updateCondition = { _id: postId };
-        } else if (userRole == "moderator") {
-            // Moderator can update their own posts and creators' posts
-            updateCondition = { 
-                _id: postId,
-                $or: [
-                    { role: "creator" },
-                    { userId: userId }
-                ]
-            };
-        } else if (userRole == "creator") {
-            // Creator can only update their own posts
-            updateCondition = { 
-                _id: postId,
-                userId: userId
-            };
-        }
-        console.log("The update condition inside post PUT : ", updateCondition)
-        const post = await Post.updateMany(updateCondition, { ...req.body });
+    if (userRole == "admin") {
+      console.log("inside admin condition...")
+      // Admin can update any post
+      updateCondition = { _id: postId };
+    } else if (userRole == "moderator") {
+      // Moderator can update their own posts and creators' posts
+      updateCondition = {
+        _id: postId,
+        $or: [
+          { role: "creator" },
+          { userId: userId }
+        ]
+      };
+    } else if (userRole == "creator") {
+      // Creator can only update their own posts
+      updateCondition = {
+        _id: postId,
+        userId: userId
+      };
+    }
+    console.log("The update condition inside post PUT : ", updateCondition)
+    const post = await Post.updateMany(updateCondition, { ...req.body });
 
-        if (post.nModified > 0) {
-            res.status(200).send({ message: "Post data updated successfully", post });
-        } else {
-            res.status(403).send({ message: "You do not have permission to update this post" });
-        }
+    if (post.nModified > 0) {
+      res.status(200).send({ message: "Post data updated successfully", post });
+    } else {
+      res.status(403).send({ message: "You do not have permission to update this post" });
+    }
 
 
     //if(req.user.role == "admin"){

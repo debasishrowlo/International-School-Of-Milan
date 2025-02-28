@@ -1,5 +1,10 @@
 import mongoose from "mongoose"
+
 const PostSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    required: true,
+  },
   title: {
     type: String,
     required: true,
@@ -15,15 +20,6 @@ const PostSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
-  username: {
-    type: String,
-    required: true
-  },
-  // published: {
-  //   type: Boolean,
-  //   required: true,
-  //   default: false,
-  // },
   createdAt: {
     type: Date,
     default: Date.now,

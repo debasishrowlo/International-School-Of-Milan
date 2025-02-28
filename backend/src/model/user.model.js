@@ -18,7 +18,6 @@ const UserSchema = new Schema({
     enum: ['student', 'admin', 'moderator', 'creator'],
     default: 'student',
     required: true
-
   },
   firstLogin: {
     type: Boolean,
@@ -39,6 +38,14 @@ const UserSchema = new Schema({
 })
 
 UserSchema.set("toJSON", {
+  transform: (doc, ret) => {
+    ret.id = ret._id
+    delete ret._id
+    delete ret.__v
+  }
+})
+
+UserSchema.set("toObject", {
   transform: (doc, ret) => {
     ret.id = ret._id
     delete ret._id

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { createSingleNewsRoute } from "@/router"
+import { createActivityRoute } from "@/router"
 import * as u from "@/utils" 
 
 import { Post } from "@/types"
@@ -14,7 +14,7 @@ const PostList = ({
     <div className="mt-32 grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-32">
       {posts.map((post) => (
         <Link
-          to={createSingleNewsRoute(post.id)}
+          to={createActivityRoute(post.id)}
           key={post.id}
           className="group block overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
         >

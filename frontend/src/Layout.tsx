@@ -9,6 +9,7 @@ function App() {
       <div className='flex-grow'>
         <Outlet/>
       </div>
+      <div className="h-26"></div>
       <footer className="fixed z-10 bottom-0 w-full py-4 bg-gray-100 text-center text-12 text-neutral-600">
         <p>
           All rights reserved to The School of Milan © 

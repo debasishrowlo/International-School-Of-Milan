@@ -196,7 +196,7 @@ router.put("/:id", verifyToken,userDataPermission("admin", "moderator","creator"
 router.delete("/:id", verifyToken, isAdmin, async (req, res) => {
   try {
     const postId = req.params.id;
-     if(req.user.role == "admin"){
+     if (req.user.role == "admin") {
       const post = await Post.deleteMany({
         _id:postId,
          role:"admin"
@@ -204,17 +204,15 @@ router.delete("/:id", verifyToken, isAdmin, async (req, res) => {
       })
       res.status(200).send({message:"Post data deleted Sucessfully", post})
 
-    }else if(req.user.role == "moderator"){
+    } else if (req.user.role == "moderator") {
       const post = await Post.deletedOne({
         _id:postId,
          role:"moderator"
              
       })
-      res.status(200).send({message:"Post data deleted Sucessfully", post})
 
- 
-    }
-    else{
+      res.status(200).send({message:"Post data deleted Sucessfully", post})
+    } else {
       const post = await Post.deleteOne({
         where : {
           _id:postId,
@@ -233,6 +231,20 @@ router.delete("/:id", verifyToken, isAdmin, async (req, res) => {
     console.error("Error Deleting Post:", error);
     res.status(500).send({ message: "Error Deleting Post" });
   }
+})
+
+router.get("/:id/comments", verifyToken, isAdmin, async (req, res) => {
+  const postId = req.params.id
+
+  const post = await Post.findById(postId)
+
+  if (!post) {
+    return res.status(404).send({ message: "Post not found" })
+  }
+  
+  await post.populate("comments")
+
+  return res.status(200).send([])
 })
 
 export default router;

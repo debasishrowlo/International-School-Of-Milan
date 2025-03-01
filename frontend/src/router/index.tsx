@@ -38,6 +38,7 @@ export const routes = {
   news: '/news',
   singleNews: '/news/:id',
   announcements: '/announcements',
+
   activities: '/activities/:type',
   activity: '/activity/:id',
 
@@ -54,6 +55,12 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export const apiRoutes = {
   bulkCreateUsers: `${backendUrl}/auth/multiRegisterRoute`,
+
+  posts: {
+    comments: {
+      list: (postId: string) => `${backendUrl}/posts/${postId}/comments`,
+    },
+  },
 
   // Posts
   getPosts: `${backendUrl}/posts`,
@@ -74,10 +81,7 @@ export const apiRoutes = {
 
 // Route helper functions
 export const createSingleNewsRoute = (id: string) => routes.singleNews.replace(':id', id);
-export const createActivityRoute = (activity: TActivity) => {
-  console.log(routes.activity, activity)
-  return routes.activity.replace(':id', activity.id)
-}
+export const createActivityRoute = (id: string) => routes.activity.replace(':id', id)
 export const createActivitiesRoute = (type: string) => routes.activities.replace(':type', type);
 export const createDashboardActivityRoute = (slug: string) => routes.dashboard_activity.replace(':slug', slug);
 

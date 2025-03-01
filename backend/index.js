@@ -38,7 +38,7 @@ app.use("/api/auth", userRoutes);
 app.use("/api/cas", casroute);
 app.use("/api/response", casresponseroute);
 
-app.get('/', (req, res) => {
+app.get('/', (_, res) => {
   res.status(404).send();
 });
 

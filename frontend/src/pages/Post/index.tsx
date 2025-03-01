@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useDispatch } from "react-redux"
+import axios from "axios"
 
 // import { useFetchPostByIdQuery } from '@/redux/features/posts/PostsApi';
 import SinglePostCard from './singlePostCard';
@@ -33,43 +34,21 @@ const SinglePost = () => {
       return
     }
 
-    const response = await fetch(apiRoutes.findPost(id), {
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
+    const response = await axios.get(apiRoutes.findPost(id), {
+      withCredentials: true,
     })
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        logout()
-      }
-
-      return
-    }
-
-    const post = await response.json()
+    const post = await response.data
 
     setPost(post)
     setIsLoading(false)
 
-    const relatedPostsResponse = await fetch(apiRoutes.getRelatedPosts(id), {
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    const relatedPostsResponse = await axios.get(
+      apiRoutes.getRelatedPosts(id), 
+      { withCredentials: true }
+    )
 
-    if (!relatedPostsResponse.ok) {
-      if (relatedPostsResponse.status === 401) {
-        logout()
-      }
-
-      return
-    }
-
-    const relatedPosts = await relatedPostsResponse.json()
-
+    const relatedPosts = await relatedPostsResponse.data
     setRelatedPosts(relatedPosts)
   }
 

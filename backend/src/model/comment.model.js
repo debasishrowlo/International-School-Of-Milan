@@ -10,7 +10,7 @@ const CommentSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
-  postId: {
+  post: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Post',
     required: true,
@@ -19,6 +19,14 @@ const CommentSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+})
+
+CommentSchema.set("toJSON", {
+  transform: (doc, ret) => {
+    ret.id = ret._id
+    delete ret._id
+    delete ret.__v
+  }
 })
 
 const Comment = mongoose.model('Comment', CommentSchema)

@@ -10,8 +10,6 @@
 // const editorJSHTML = EditorJSHTML();
 
 const SinglePostCard = ({ post }) => {
-  console.log(post)
-
   return (
     <div>
       <img src={post.coverImageUrl} alt="" />

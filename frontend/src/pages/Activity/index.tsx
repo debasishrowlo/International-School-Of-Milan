@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { useDispatch } from "react-redux"
+import { useSelector } from "react-redux"
 import axios from "axios"
 
 import SinglePostCard from './singlePostCard';
@@ -11,18 +11,21 @@ import { apiRoutes, createSingleNewsRoute } from "@/router"
 
 import { Post as BasePost } from "@/types"
 
+type Comment = {
+  id: string,
+  text: string,
+  user: {
+    username: string,
+  },
+}
+
 type Post = BasePost & {
-  comments: Array<{
-    text: string,
-    user: {
-      id: string,
-      username: string,
-    },
-  }>,
+  comments: Comment[],
 }
 
 const SinglePost = () => {
   const { id } = useParams();
+  const user = useSelector((state:any) => state.auth.user)
 
   const [isLoading, setIsLoading] = useState(true)
   const [post, setPost] = useState<Post | null>(null)
@@ -36,7 +39,7 @@ const SinglePost = () => {
       { withCredentials: true },
     )
     
-    if (response.statusText === "OK") {
+    if (response.status === 200) {
       const post = await response.data.post
 
       const commentsResponse = await axios.get(
@@ -44,7 +47,7 @@ const SinglePost = () => {
         { withCredentials: true },
       )
 
-      if (commentsResponse.statusText === "OK") {
+      if (commentsResponse.status === 200) {
         setPost({
           ...post,
           comments: [...commentsResponse.data],
@@ -64,6 +67,18 @@ const SinglePost = () => {
     }
   }
 
+  const addComment = (comment:Comment) => {
+    if (!post) { return }
+
+    setPost({
+      ...post,
+      comments: [
+        ...post.comments,
+        { ...comment },
+      ],
+    })
+  }
+
   useEffect(() => {
     fetchData()
   }, [id])
@@ -76,7 +91,11 @@ const SinglePost = () => {
           <div className='flex flex-col lg:flex-row justify-between items-start md:gap-12 gap-8'>
             <div className='lg:w-2/3 w-full'>
               <SinglePostCard post={post} />
-              <CommentCards comments={post.comments}/>
+              <CommentCards
+                post={post}
+                comments={post.comments} 
+                addComment={addComment}
+              />
             </div>
             {(relatedPosts.length > 0) && (
               <div className='bg-white lg:w-1/3 w-full'>

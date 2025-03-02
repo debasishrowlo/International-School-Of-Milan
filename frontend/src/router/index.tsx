@@ -59,6 +59,7 @@ export const apiRoutes = {
   posts: {
     comments: {
       list: (postId: string) => `${backendUrl}/posts/${postId}/comments`,
+      create: (postId: string) => `${backendUrl}/posts/${postId}/comments`,
     },
   },
 

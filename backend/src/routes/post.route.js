@@ -247,4 +247,27 @@ router.get("/:id/comments", verifyToken, isAdmin, async (req, res) => {
   return res.status(200).send([])
 })
 
+router.post("/:id/comments", verifyToken, isAdmin, async (req, res) => {
+  const postId = req.params.id
+
+  const post = await Post.findById(postId)
+
+  if (!post) {
+    return res.status(404).send({ message: "Post not found" })
+  }
+  
+  const comment = await Comment.create({
+    text: req.body.comment,
+    post: post.id,
+    user: req.user.id,
+  })
+  
+  const responseComment = await Comment
+    .findById(comment.id)
+    .select("-post")
+    .populate("user", "-_id username")
+
+  return res.status(201).send(responseComment)
+})
+
 export default router;

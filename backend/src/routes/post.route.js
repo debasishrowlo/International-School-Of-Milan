@@ -236,15 +236,19 @@ router.delete("/:id", verifyToken, isAdmin, async (req, res) => {
 router.get("/:id/comments", verifyToken, isAdmin, async (req, res) => {
   const postId = req.params.id
 
-  const post = await Post.findById(postId)
+  const post = await Post.findById(postId).populate({
+    path: "comments",
+    populate: {
+      path: "user",
+      select: "-_id username",
+    },
+  })
 
   if (!post) {
     return res.status(404).send({ message: "Post not found" })
   }
-  
-  await post.populate("comments")
 
-  return res.status(200).send([])
+  return res.status(200).send(post.comments)
 })
 
 router.post("/:id/comments", verifyToken, isAdmin, async (req, res) => {
@@ -261,7 +265,7 @@ router.post("/:id/comments", verifyToken, isAdmin, async (req, res) => {
     post: post.id,
     user: req.user.id,
   })
-  
+
   const responseComment = await Comment
     .findById(comment.id)
     .select("-post")

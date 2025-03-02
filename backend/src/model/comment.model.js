@@ -1,5 +1,7 @@
 import mongoose from "mongoose"
 
+import Post from "./post.model.js"
+
 const CommentSchema = new mongoose.Schema({
   text: {
     type: String,
@@ -19,6 +21,11 @@ const CommentSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+})
+
+CommentSchema.post("save", async function (doc, next) {
+  await Post.findByIdAndUpdate(doc.post, { $push: { comments: doc._id } })
+  next()
 })
 
 CommentSchema.set("toJSON", {

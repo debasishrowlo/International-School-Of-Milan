@@ -98,8 +98,7 @@ router.post('/logout', async (req, res) => {
   }
 })
 
-// Get  users
-router.get('/users', verifyToken, userDataPermission("admin", "moderator"), async (req, res) => {
+router.get('/users', verifyToken, userDataPermission(["admin", "moderator"]), async (req, res) => {
   try {
     if (req.user.role == "admin") {
       const users = await User.find({
@@ -124,35 +123,22 @@ router.get('/users', verifyToken, userDataPermission("admin", "moderator"), asyn
   }
 })
 
-// Delete a user
-router.delete('/users/:id', verifyToken, userDataPermission("admin", "moderator"), async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (req.user.role == "admin") {
-      const user = await User.deleteOne({
-        _id: id,
-        role: {
-          $ne: "admin"
-        }
+router.delete('/users/:id', verifyToken, userDataPermission(["admin", "moderator"]), async (req, res) => {
+  const { id } = req.params;
 
-      })
-      res.status(200).send({ message: "User data deleted Sucessfully", user })
+  const user = await User.findById(id)
 
-    } else {
-      const user = await User.deleteOne({
-        where: {
-          _id: id,
-          role: {
-            $nin: ["admin", "moderator"]
-          }
-        }
-      })
-      res.status(200).send({ message: "Users Found Sucessfully", user })
-    }
-  } catch (error) {
-    console.error("Error Deleting User.", error);
-    res.status(500).send({ message: "Error Deleting!" });
+  if (!user) {
+    return res.status(404).send()
   }
+
+  if (user.role === "admin") {
+    return res.status(403).send()
+  }
+
+  await user.deleteOne()
+
+  res.status(200).send({ message: "User data deleted Sucessfully" })
 })
 
 // Update a role for user

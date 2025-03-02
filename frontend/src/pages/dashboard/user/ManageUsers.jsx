@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { MdEdit } from "react-icons/md";
 import axios from 'axios'
 import { useSelector } from 'react-redux';
@@ -24,8 +24,8 @@ const ManageUsers = () => {
   const [file, setFile] = useState(null)
   const [isModelOpen, setIsModelOpen] = useState();
   const [isExcelModelOpen, setIsExcelModelOpen] = useState(false);
-  const [users, setUsers] = useState([{ name: '', surname: '', grade: '', role: 'student' }]); // Liste des utilisateurs à créer
-  const [showModal, setShowModal] = useState(false); // Pour contrôler l'affichage de la modal
+  const [users, setUsers] = useState([{ name: '', surname: '', grade: '', role: 'student' }])
+  const [showModal, setShowModal] = useState(false)
 
   const { data, error, isLoading, refetch } = useGetUserProfileQuery();
   const [deleteUser] = useDeleteUserMutation();
@@ -77,12 +77,19 @@ const ManageUsers = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, index) => {
     try {
-      const response = await deleteUser(id).unwrap();
-      alert("User deleted successfully.");
-      console.log("Repsonse", response)
-      refetch();
+      const response = await axios.delete(
+        apiRoutes.users.delete(id),
+        { withCredentials: true }
+      )
+      
+      if (response.status === 200) {
+        setUsers([
+          ...users.slice(0, index),
+          ...users.slice(index + 1),
+        ])
+      }
     } catch (error) {
       console.error('Error deleting user:', error);
     }
@@ -151,6 +158,20 @@ const ManageUsers = () => {
     setUsers([{ name: '', surnname: '', grade: '', role: 'student' }]);
   }
 
+  const fetchUsers = async () => {
+    const response = await axios.get(apiRoutes.users.list, {
+      withCredentials: true,
+    })
+    
+    if (response.status === 200) {
+      setUsers(response.data.users)
+    }
+  }
+
+  useEffect(() => {
+    fetchUsers()
+  }, [])
+
   return (
     <>
       {
@@ -206,8 +227,8 @@ const ManageUsers = () => {
                 </thead>
 
                 <tbody>
-                  {
-                    data?.users && data.users.map((currentuser, index) => (<tr key={index}>
+                  {users.map((currentuser, index) => (
+                    <tr key={index}>
                       <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 ">
                         {index + 1}
                       </th>
@@ -234,7 +255,7 @@ const ManageUsers = () => {
                               (user.role === 'moderator' && (currentuser.role === 'student' || currentuser.role === 'creator'))) {
 
                               if (window.confirm('Are you sure you want to delete this User?')) {
-                                handleDelete(currentuser.id);
+                                handleDelete(currentuser.id, index);
                               }
 
                             } else {
@@ -248,10 +269,7 @@ const ManageUsers = () => {
                       </td>
                     </tr>))
                   }
-
-
                 </tbody>
-
               </table>
             </div>
           </div>

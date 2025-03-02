@@ -56,6 +56,11 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const apiRoutes = {
   bulkCreateUsers: `${backendUrl}/auth/multiRegisterRoute`,
 
+  users: {
+    list: `${backendUrl}/auth/users`,
+    delete: (id:string) => `${backendUrl}/auth/users/${id}`,
+  },
+
   posts: {
     comments: {
       list: (postId: string) => `${backendUrl}/posts/${postId}/comments`,

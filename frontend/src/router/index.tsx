@@ -54,6 +54,7 @@ export const apiRoutes = {
   users: {
     list: `${backendUrl}/auth/users`,
     delete: (id:string) => `${backendUrl}/auth/users/${id}`,
+    update: (id:string) => `${backendUrl}/auth/users/${id}`,
   },
 
   posts: {

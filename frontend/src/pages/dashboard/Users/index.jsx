@@ -27,9 +27,8 @@ const emptyUser = {
 const ManageUsers = () => {
   const { user } = useSelector((state) => state.auth);
 
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [editingUser, setEditingUser] = useState(null);
   const [file, setFile] = useState(null)
-  const [isModelOpen, setIsModelOpen] = useState();
   const [isExcelModelOpen, setIsExcelModelOpen] = useState(false);
   const [users, setUsers] = useState([])
   const [newUsers, setNewUsers] = useState([{ ...emptyUser }])
@@ -102,14 +101,21 @@ const ManageUsers = () => {
     }
   };
 
-  const handleEdit = (user) => {
-    setSelectedUser({ ...user });
-    setIsModelOpen(true);
-  };
+  const updateUser = () => {
+    const userIndex = users.findIndex(user => user.id === editingUser.id)
 
-  const handleCloseModel = () => {
-    setIsModelOpen(false);
-    setSelectedUser(null);
+    if (userIndex !== -1) {
+      setUsers([
+        ...users.slice(0, userIndex),
+        { ...editingUser },
+        ...users.slice(userIndex + 1),
+      ])
+      setEditingUser(null)
+    }
+  }
+
+  const handleEdit = (user) => {
+    setEditingUser({ ...user });
   };
 
   const handleExcelModel = () => {
@@ -355,11 +361,12 @@ const ManageUsers = () => {
           </form>
         </Modal>
       </section>
-      {isModelOpen && (
+      {(editingUser !== null) && (
         <UpdateUserModel
-          user={selectedUser} 
-          onClose={handleCloseModel} 
-          onRoleUpdate={refetch}
+          user={user} 
+          editingUser={editingUser} 
+          setEditingUser={setEditingUser} 
+          updateUser={updateUser}
         />
       )}
     </>

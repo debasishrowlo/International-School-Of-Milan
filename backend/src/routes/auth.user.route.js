@@ -104,12 +104,13 @@ router.post('/logout', async (req, res) => {
 
 router.get('/users', verifyToken, userDataPermission(["admin", "moderator"]), async (req, res) => {
   try {
+    const fields = "firstName lastName grade role"
     if (req.user.role == "admin") {
       const users = await User.find({
         role: {
           $ne: "admin"
         },
-      }).select("-password")
+      }).select(fields)
       res.status(200).send({ message: "Users Found Sucessfully", users })
     } else {
       const users = await User.find({
@@ -118,7 +119,7 @@ router.get('/users', verifyToken, userDataPermission(["admin", "moderator"]), as
             $nin: ["admin", "moderator"]
           }
         }
-      }).select("-password")
+      }).select(fields)
       res.status(200).send({ message: "Users Found Sucessfully", users })
     }
   } catch (error) {

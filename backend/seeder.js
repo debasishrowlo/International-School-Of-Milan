@@ -9,13 +9,12 @@ const deleteUsers = async () => {
 }
 
 const createAdminUser = async () => {
-  const name = "User"
-  const surname = "Test"
+  const firstName = "User"
+  const lastName = "Test"
   const grade = "Admin"
-  const username = `${name}${surname}${grade}`;
   const password = "1234"
 
-  const user = new User({ username, password, role: "admin" })
+  const user = new User({ firstName, lastName, grade, password, role: "admin" })
   await user.save()
 
   return user

@@ -27,7 +27,7 @@ const UpdateUserModel = ({ user, onClose, onRoleUpdate }) => {
           <input
             className="block w-full px-3 py-2 text-gray-700 border border-gray-300 rounded"
             type="text"
-            value={user?.email}
+            value={user.name}
             placeholder="John Doe"
             readOnly
           />

@@ -23,25 +23,29 @@ router.post('/bulkRegister', upload.single('excelFile'), bulkRegister)
 
 // Multi User Route
 router.post('/multiRegisterRoute', verifyToken, userDataPermission("admin", "moderator"), async (req, res) => {
-  const password = "ISM2025";
+  const password = "ISM2025"
 
   try {
-    const registeredUsers = await Promise.all(
-      req.body.map(async (user) => {
+    await Promise.all(
+      req.body.map(async user => {
         const newUser = new User({
-          ...user,
-          password
+          firstName: user.firstName,
+          lastName: user.lastName,
+          grade: user.grade,
+          role: user.role,
+          password,
         });
         await newUser.save();
         return newUser;
       })
-    );
+    )
 
-    res.status(201).json(registeredUsers);
+    res.status(201).send()
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    // TODO: Handle duplicate username case separately
+    res.status(400).json({ message: error.message })
   }
-});
+})
 
 // Login  a user
 router.post('/login', async (req, res) => {

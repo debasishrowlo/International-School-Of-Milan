@@ -17,6 +17,13 @@ const roles = [
   "student",
 ]
 
+const emptyUser = {
+  firstName: '', 
+  lastName: '', 
+  grade: '', 
+  role: 'student',
+}
+
 const ManageUsers = () => {
   const { user } = useSelector((state) => state.auth);
 
@@ -24,11 +31,11 @@ const ManageUsers = () => {
   const [file, setFile] = useState(null)
   const [isModelOpen, setIsModelOpen] = useState();
   const [isExcelModelOpen, setIsExcelModelOpen] = useState(false);
-  const [users, setUsers] = useState([{ name: '', surname: '', grade: '', role: 'student' }])
+  const [users, setUsers] = useState([])
+  const [newUsers, setNewUsers] = useState([{ ...emptyUser }])
+  console.log(newUsers)
   const [showModal, setShowModal] = useState(false)
-
-  const { data, error, isLoading, refetch } = useGetUserProfileQuery();
-  const [deleteUser] = useDeleteUserMutation();
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -96,7 +103,7 @@ const ManageUsers = () => {
   };
 
   const handleEdit = (user) => {
-    setSelectedUser(user);
+    setSelectedUser({ ...user });
     setIsModelOpen(true);
   };
 
@@ -110,13 +117,24 @@ const ManageUsers = () => {
   }
 
   const handleAddUserField = () => {
-    setUsers([...users, { username: '', grade: '', role: '' }])
+    setNewUsers([...newUsers, { ...emptyUser }])
   }
 
   const handleUserChange = (index, field, value) => {
-    const newUsers = [...users];
-    newUsers[index][field] = value;
-    setUsers(newUsers);
+    const changedNewUsers = [...newUsers]
+    changedNewUsers[index][field] = value
+    setNewUsers(changedNewUsers)
+  }
+
+  const handleCreateUsers = () => {
+    const createdUsers = newUsers.filter(user => (
+      user.firstName !== "" &&
+      user.lastName !== "" &&
+      user.grade !== ""
+    ))
+    setNewUsers([{ ...emptyUser }]);
+    setShowModal(false);
+    return createdUsers;
   }
 
   const createMultipleUsers = async () => {
@@ -128,34 +146,19 @@ const ManageUsers = () => {
       const response = await axios.post(
         apiRoutes.bulkCreateUsers,
         multiUserData,
-        { withCredentials: true }
+        { withCredentials: true },
       )
-      refetch();
-      console.log("Resposne ", response)
+      if (response.status === 201) {
+        await fetchUsers()
+      }
     } catch (error) {
       throw new Error('Error creating users:', error);
     }
   }
 
-  const handleCreateUsers = () => {
-    const createdUsers = users.filter(user => (
-      user.name !== "" &&
-      user.surname !== "" &&
-      user.grade !== "" &&
-      roles.includes(user.role)
-    )).map(user => ({
-      username: `${user.name}${user.surname}${user.grade}`,
-      grade: user.grade,
-      role: user.role
-    }));
-    setUsers([{ name: '', surname: '', grade: '', role: 'student' }]);
-    setShowModal(false);
-    return createdUsers;
-  }
-
   const closemodal = () => {
     setShowModal(false);
-    setUsers([{ name: '', surnname: '', grade: '', role: 'student' }]);
+    setNewUsers([{ ...emptyUser }]);
   }
 
   const fetchUsers = async () => {
@@ -166,11 +169,15 @@ const ManageUsers = () => {
     if (response.status === 200) {
       setUsers(response.data.users)
     }
+
+    setIsLoading(false)
   }
 
   useEffect(() => {
     fetchUsers()
   }, [])
+
+  const refetch = () => {}
 
   return (
     <>
@@ -278,22 +285,22 @@ const ManageUsers = () => {
         <Modal isOpen={showModal} onClose={() => closemodal()}>
           <h2>Create Users</h2>
           <div>
-            {users.map((currentUser, index) => (
+            {newUsers.map((currentUser, index) => (
               <div key={index} className="cr-user-input">
                 <input
                   className='cr-input'
                   type="text"
                   placeholder="Name"
-                  value={currentUser.name}
-                  onChange={(e) => handleUserChange(index, 'name', e.target.value)}
+                  value={currentUser.firstName}
+                  onChange={(e) => handleUserChange(index, 'firstName', e.target.value)}
                   autoFocus
                 />
                 <input
                   className='cr-input'
                   type="text"
-                  value={currentUser.surname}
+                  value={currentUser.lastName}
                   placeholder="Surname"
-                  onChange={(e) => handleUserChange(index, 'surname', e.target.value)}
+                  onChange={(e) => handleUserChange(index, 'lastName', e.target.value)}
                 />
                 <input
                   className='cr-input'
@@ -348,9 +355,13 @@ const ManageUsers = () => {
           </form>
         </Modal>
       </section>
-      {
-        isModelOpen && <UpdateUserModel user={selectedUser} onClose={handleCloseModel} onRoleUpdate={refetch} />
-      }
+      {isModelOpen && (
+        <UpdateUserModel
+          user={selectedUser} 
+          onClose={handleCloseModel} 
+          onRoleUpdate={refetch}
+        />
+      )}
     </>
   )
 }

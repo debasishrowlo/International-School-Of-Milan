@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useSelector } from "react-redux";
+
 const ResetPassword = () => {
   const { user } = useSelector((state: any) => state.auth)
   const [data, setData] = useState({

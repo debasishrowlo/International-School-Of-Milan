@@ -5,7 +5,6 @@ import AuthGuard from '@/router/AuthGuard';
 
 import App from "@/App"
 
-// Page imports
 import Home from '@/pages/home/Home';
 import Post from '@/pages/Post';
 import Posts from '@/pages/Posts';
@@ -15,19 +14,16 @@ import Activities from '@/pages/Activities';
 import Activity from '@/pages/Activity';
 import ResetPassword from '@/pages/resetPassword';
 
-// Dashboard imports
 import AdminLayout from '@/pages/dashboard/AdminLayout';
 import Dashboard from '@/pages/dashboard/Dashboard';
 import ManageItems from '@/pages/dashboard/post/ManageItems';
-import ManageUsers from '@/pages/dashboard/user/ManageUsers';
+import DashboardUsers from '@/pages/dashboard/Users';
 import DashboardPosts from '@/pages/dashboard/Posts';
 import DashboardActivity from '@/pages/dashboard/Activity';
 import Cas from '@/pages/dashboard/activities/underpages/CAS/cas';
 
-// Types
 import { Activity as TActivity, Post as TPost } from '@/types';
 
-// Route definitions
 export const routes = {
   // Public routes
   home: '/',
@@ -50,7 +46,6 @@ export const routes = {
   dashboard_activity: '/dashboard/activities/:slug',
 };
 
-// API route definitions
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export const apiRoutes = {
@@ -85,20 +80,17 @@ export const apiRoutes = {
   deleteActivity: (activity: TActivity) => `${backendUrl}/activities/${activity.id}`,
 };
 
-// Route helper functions
 export const createSingleNewsRoute = (id: string) => routes.singleNews.replace(':id', id);
 export const createActivityRoute = (id: string) => routes.activity.replace(':id', id)
 export const createActivitiesRoute = (type: string) => routes.activities.replace(':type', type);
 export const createDashboardActivityRoute = (slug: string) => routes.dashboard_activity.replace(':slug', slug);
 
-// Auth wrapper component
 const AuthProtectedLayout = () => (
   <AuthGuard>
     <Layout />
   </AuthGuard>
 );
 
-// Router configuration
 const router = createBrowserRouter([
   {
     element: <App />,
@@ -130,7 +122,7 @@ const router = createBrowserRouter([
             children: [
               { path: routes.dashboard, element: <Dashboard /> },
               { path: routes.dashboard_manageItems, element: <ManageItems /> },
-              { path: routes.dashboard_users, element: <ManageUsers /> },
+              { path: routes.dashboard_users, element: <DashboardUsers /> },
               { path: routes.dashboard_news_list, element: <DashboardPosts /> },
               { path: routes.dashboard_activity, element: <DashboardActivity /> },
             ],

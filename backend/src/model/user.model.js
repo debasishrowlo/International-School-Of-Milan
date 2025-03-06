@@ -2,12 +2,20 @@ import { Schema, model } from 'mongoose';
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 
+import { generateUsername } from "../common.js"
+
+const hashPassword = async (password) => {
+  return await bcrypt.hash(password, 10)
+}
 
 const UserSchema = new Schema({
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  grade: { type: String, required: true },
   username: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   password: {
     type: String,
@@ -53,12 +61,35 @@ UserSchema.set("toObject", {
   }
 })
 
-// Hash a password before saving to db
+UserSchema.pre('validate', async function(next) {
+  const user = this;
+
+  if (!user.username) {
+    user.username = generateUsername(user.firstName, user.lastName, user.grade)
+  }
+
+  next();
+})
+
 UserSchema.pre('save', async function(next) {
   const user = this;
-  if (!user.isModified('password')) return next();
-  const hashedPassword = await bcrypt.hash(user.password, 10);
-  user.password = hashedPassword;
+
+  if (user.isNew) {
+    user.password = await hashPassword(user.password)
+  } else {
+    if (user.isModified('password')) {
+      user.password = await hashPassword(user.password)
+    }
+
+    if (
+      user.isModified('firstName') ||
+      user.isModified('lastName') ||
+      user.isModified('grade')
+    ) {
+      user.username = generateUsername(user.firstName, user.lastName, user.grade)
+    }
+  }
+
   next();
 })
 

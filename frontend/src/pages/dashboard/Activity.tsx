@@ -35,7 +35,7 @@ const Error = ({ form, fieldName }: { form: FormikValues; fieldName: string }) =
   return null
 }
 
-const ActivityPage = () => {
+const DashboardActivity = () => {
   const { slug } = useParams()
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -253,7 +253,7 @@ const ActivityPage = () => {
                       <FaTrash className='group-hover:text-white text-black transition duration-150' />
                     </button>
                   </div>
-                  <Link to={createActivityRoute(activity)}>
+                  <Link to={createActivityRoute(activity.id)}>
                     <div>
                       <img
                         src={activity.coverImageUrl}
@@ -437,4 +437,4 @@ const ActivityPage = () => {
   )
 }
 
-export default ActivityPage
+export default DashboardActivity

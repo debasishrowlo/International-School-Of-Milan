@@ -18,7 +18,6 @@ const daysToMs = (days) => {
   return days * hoursPerDay * minutesPerHour * secondsPerMinute * millisecondsPerSecond
 }
 
-// Bulk Register Using Excel
 router.post('/bulkRegister', upload.single('excelFile'), bulkRegister)
 
 // Multi User Route
@@ -47,7 +46,6 @@ router.post('/multiRegisterRoute', verifyToken, userDataPermission("admin", "mod
   }
 })
 
-// Login  a user
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -91,7 +89,6 @@ router.post('/login', async (req, res) => {
   }
 })
 
-// Logout  a user
 router.post('/logout', async (req, res) => {
   try {
     res.clearCookie("token");
@@ -146,7 +143,6 @@ router.delete('/users/:id', verifyToken, userDataPermission(["admin", "moderator
   res.status(200).send({ message: "User data deleted Sucessfully" })
 })
 
-// Update a role for user
 router.put('/users/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -170,30 +166,27 @@ router.put('/users/:id', async (req, res) => {
   }
 })
 
-// Reset Password
-router.put('/resetPassword', verifyToken, async (req, res) => {
+router.put('/reset-password', verifyToken, async (req, res) => {
   try {
     const { newPassword } = req.body;
-    const id = req.user.userId;
-    console.log("This is new password", newPassword, id)
+
     const user = await User.findById({
-      _id: id,
-      firstLogin: true
+      _id: req.user.id,
     })
+
     if (!user) {
       return res.status(404).send({
         message: "User Not Found Or Password Has Been reset Once already"
       })
     }
+
     user.password = newPassword
-    console.log("this is new pass : ", user)
-    user.firstLogin = false;
-    await user.save();
+
+    await user.save()
     return res.status(200).json({
       message: "Password Reset Successfully",
       success: true
     })
-
   } catch (error) {
     console.error("Error Resetting Password", error);
     res.status(500).send({
@@ -202,7 +195,6 @@ router.put('/resetPassword', verifyToken, async (req, res) => {
   }
 })
 
-//Update password
 router.put('/users/password/:id', verifyToken, userDataPermission("admin", "moderator"), async (req, res) => {
   function hashPassword(newPassword) {
     const hashedPass = bcrypt.hash(newPassword, 10)

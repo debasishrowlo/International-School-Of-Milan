@@ -1,7 +1,7 @@
 import { useState } from "react";
 import classnames from "classnames";
 import AdminImg from "../../assets/admin.jpg";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useLogoutUserMutation } from "../../redux/features/auth/authapi";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/features/auth/authSlice";
@@ -102,12 +102,19 @@ const AdminNavigation = () => {
           )}
         </ul>
       </div>
-
       <div className="mb-12">
-        <hr className="mb-12"></hr>
+        <hr className="mb-20"></hr>
+        <div>
+          <Link
+            to={routes.resetPassword}
+            className="block text-black"
+          >
+            Reset Password
+          </Link>
+        </div>
         <button
           onClick={handleLogout}
-          className="text-white bg-red-500 font-medium px-20 py-4 rounded-sm"
+          className="mt-20 text-white bg-red-500 font-medium px-20 py-4 rounded-sm"
         >
           Logout
         </button>

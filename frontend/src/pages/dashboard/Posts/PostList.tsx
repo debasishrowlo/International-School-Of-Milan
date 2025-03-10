@@ -72,7 +72,7 @@ const PostList = ({
             <button
               type="button"
               className="group ml-8 size-36 flex items-center justify-center border-2 border-black hover:bg-black rounded-full transition duration-150"
-              onClick={() => (user && (user?.username === post.username || user.role === 'admin')) ? deletePost(post) : message()}
+              onClick={() => (user && (user?.username === post.author.username || user.role === 'admin')) ? deletePost(post) : message()}
             >
               <FaTrash className="group-hover:text-white text-black transition duration-150" />
             </button>

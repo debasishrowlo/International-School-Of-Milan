@@ -16,7 +16,7 @@ import { apiRoutes, createActivityRoute } from "@/router"
 import { backendUrl } from "@/constants"
 import * as u from '@/utils'
 
-import { Cas } from '@/types'
+import { Cas, Post } from '@/types'
 import { RootState } from '@/redux/store'
 
 const inputProps = (form: FormikValues, fieldName: string) => {
@@ -43,25 +43,13 @@ const DashboardActivity = () => {
 
   const titleRef = useRef<HTMLInputElement>(null)
 
-  const [activities, setActivities] = useState<Cas[]>([{
-    _id: '',
-    type: '',
-    title: '',
-    description: '',
-    coverImageUrl: '',
-    content: '',
-    username: '',
-    author: {
-      id: '',
-      username: '',
-    }
-  }])
+  const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [editingActivity, setEditingActivity] = useState<Cas | null>(null)
+  const [editingPost, setEditingPost] = useState<Post | null>(null)
 
-  const editModalOpen = editingActivity !== null
+  const editModalOpen = editingPost !== null
 
   const createForm = useFormik({
     initialValues: {
@@ -90,8 +78,8 @@ const DashboardActivity = () => {
           withCredentials: true,
         })
 
-        const activity = await response.data.post
-        setActivities([...activities, activity])
+        const post = await response.data.post
+        setPosts([...posts, post])
         setCreateModalOpen(false)
         resetForm()
       } catch (error) {
@@ -117,46 +105,36 @@ const DashboardActivity = () => {
     }),
     onSubmit: async (values) => {
       try {
-        if (editingActivity === null) {
-          return
-        }
+        if (editingPost === null) { return }
 
         setIsLoading(true)
 
-        const response = await fetch(apiRoutes.updateActivity(editingActivity._id), {
-          method: 'PUT',
-          credentials: 'include',
-          body: JSON.stringify({
+        const response = await axios.put(
+          apiRoutes.updatePost(editingPost),
+          {
             title: values.title,
             coverImageUrl: values.coverImageUrl,
             content: values.content,
             description: values.description,
-          }),
-          headers: {
-            'Content-Type': 'application/json',
           },
-        })
+          { withCredentials: true },
+        )
 
-        if (!response.ok) {
-          if (response.status === 401) {
-            logout()
-          }
+        if (response.status === 200) {
+          const updatedPost = await response.data
 
-          return
+          const updatedPosts = posts.map(post => {
+            if (post.id === updatedPost.id) {
+              return { ...updatedPost }
+            }
+
+            return post
+          })
+
+          setPosts(updatedPosts)
+          setEditingPost(null)
         }
 
-        const updatedActivity = await response.json()
-
-        const updatedActivities = activities.map((activity) => {
-          if (activity._id !== updatedActivity._id) {
-            return activity
-          }
-
-          return { ...updatedActivity }
-        })
-
-        setActivities(updatedActivities)
-        setEditingActivity(null)
       } catch (error) {
         console.log('Failed to submit Post', error)
       } finally {
@@ -170,11 +148,11 @@ const DashboardActivity = () => {
   }
 
   const removeActivityFromList = (activity: Cas) => {
-    setActivities(activities.filter((a) => a._id !== activity._id))
+    setPosts(posts.filter(a => a.id !== activity.id))
   }
 
   const editActivity = (activity: any) => {
-    setEditingActivity(activity)
+    setEditingPost({ ...activity })
     editForm.setFieldValue('title', activity.title)
     editForm.setFieldValue('content', activity.content)
     editForm.setFieldValue('coverImageUrl', activity.coverImageUrl)
@@ -182,7 +160,7 @@ const DashboardActivity = () => {
   }
 
   const closeEditModal = () => {
-    setEditingActivity(null)
+    setEditingPost(null)
   }
 
   const localLogout = () => {
@@ -191,7 +169,7 @@ const DashboardActivity = () => {
 
   const deleteActivity = async (activity: Cas) => {
     console.log("Activity", activity)
-    const url = `${backendUrl}/cas/${activity._id}/`
+    const url = `${backendUrl}/cas/${activity.id}/`
     if (confirm('Are you sure you want to delete this activity?')) {
 
       const response = await fetch(url, {
@@ -217,7 +195,7 @@ const DashboardActivity = () => {
       withCredentials: true,
     })
 
-    setActivities(response.data)
+    setPosts(response.data)
     setLoading(false)
   }
 
@@ -233,21 +211,21 @@ const DashboardActivity = () => {
         <div>Loading...</div>
       ) : (
         <>
-          {activities && (activities?.length > 0) ? (
+          {posts && (posts.length > 0) ? (
             <>
-              {activities && activities?.map((activity: any) => (
+              {posts && posts.map((activity: any) => (
                 <div className='relative' key={activity.id}>
                   <div className='absolute top-12 right-12 flex'>
                     <button
                       type='button'
-                      className='group size-36 flex items-center justify-center border-2 border-black hover:bg-black rounded-full transition duration-150'
+                      className='group size-36 flex items-center justify-center border-2 border-black hover:border-white hover:bg-black rounded-full transition duration-150'
                       onClick={() => editActivity(activity)}
                     >
                       <FaPen className='group-hover:text-white text-black transition duration-150' />
                     </button>
                     <button
                       type='button'
-                      className='group ml-8 size-36 flex items-center justify-center border-2 border-black hover:bg-black rounded-full transition duration-150'
+                      className='group ml-8 size-36 flex items-center justify-center border-2 border-black hover:border-white hover:bg-black rounded-full transition duration-150'
                       onClick={() => deleteActivity(activity)}
                     >
                       <FaTrash className='group-hover:text-white text-black transition duration-150' />

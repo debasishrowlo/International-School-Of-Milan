@@ -4,7 +4,8 @@ const router = express.Router();
 import verifyToken from '../middleware/verifyToken.js';
 import isAdmin from '../middleware/isAdmin.js';
 
-import activity from '../model/activity.js';
+import Activity from '../model/activity.js';
+import Post from "../model/post.model.js"
 
 const supportedActivities = [
   "clubs",
@@ -27,7 +28,7 @@ const createdResponse = (res, activity) => {
 }
 
 const findActivities = async (activityType) => {
-  return await activity.find({ type: activityType })
+  return await Activity.find({ type: activityType })
     .populate({ path: 'author', select: "username" })
     .sort({ createdAt: -1 })
 }
@@ -37,7 +38,7 @@ const successResponse = (res, activities) => {
 }
 
 const createActivity = async (activityData) => {
-  return await activity.create(activityData)
+  return await Activity.create(activityData)
 }
 
 router.get('/:activityType', verifyToken, async (req, res) => {
@@ -89,23 +90,21 @@ router.post("/", verifyToken, isAdmin, async (req, res) => {
 
 router.put("/:id", verifyToken, isAdmin, async (req, res) => {
   try {
-    const activityId = req.params.id;
+    const postId = req.params.id;
 
-    const updatedActivity = await activity
+    const updatedPost = await Post
       .findByIdAndUpdate(
-        activityId,
+        postId,
         { ...req.body },
         { new: true }
       )
       .populate("author", "username")
 
-    if (!updatedActivity) {
-      return res.status(404).send({ message: "Activity Not Found" })
+    if (!updatedPost) {
+      return res.status(404).send({ message: "Post Not Found" })
     }
 
-    res.status(200).send({
-      ...updatedActivity.toJSON(),
-    })
+    res.status(200).send(updatedActivity)
   } catch (error) {
     console.error("Error Updating Activity:", error);
     res.status(500).send({ message: "Error Updating Activity" });
@@ -116,7 +115,7 @@ router.delete("/:id", verifyToken, isAdmin, async (req, res) => {
   try {
     const activityId = req.params.id;
 
-    const activity = await activity.findByIdAndDelete(activityId);
+    const activity = await Activity.findByIdAndDelete(activityId);
     if (!activity) {
       return res.status(404).send({ message: "Activity Not Found" })
     }

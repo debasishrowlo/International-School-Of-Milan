@@ -24,7 +24,7 @@ export type Activity = {
   }
 }
 export type Cas = {
-  _id: string,
+  id: string,
   type: string,
   title: string,
   description: string,

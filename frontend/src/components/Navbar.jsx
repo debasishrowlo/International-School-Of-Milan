@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { IoClose, IoMenu } from 'react-icons/io5';
@@ -10,7 +10,7 @@ import { useLogoutUserMutation } from '../redux/features/auth/authapi';
 import { logout } from '../redux/features/auth/authSlice';
 import { navbarActivities } from "@/constants"
 
-import { createActivitiesRoute } from "@/router"
+import { routes, createActivitiesRoute } from "@/router"
 
 const navLists = [
   { name: 'Home', path: '/' },
@@ -127,11 +127,21 @@ const Navbar = () => {
           </li>
 
           {isLoggedIn ? (
-            <li className='flex items-center gap-3'>
-              <button
-                onClick={handleLogout}
-                className='text-gray-600 hover:text-blue-600 transition-all font-medium'>Logout</button>
-            </li>
+            <>
+              <li className='flex items-center gap-3'>
+                <Link 
+                  to={routes.resetPassword}
+                  className='text-gray-600 hover:text-blue-600 transition-all font-medium'
+                >
+                  Reset Password
+                </Link>
+              </li>
+              <li className='flex items-center gap-3'>
+                <button
+                  onClick={handleLogout}
+                  className='text-gray-600 hover:text-blue-600 transition-all font-medium'>Logout</button>
+              </li>
+            </>
           ) : (
             <li>
               <NavLink

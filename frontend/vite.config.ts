@@ -10,5 +10,14 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     }
   },
-
+  server: {
+    port: 3000,
+    proxy: {
+      '/api': 'http://localhost:8000',
+    },
+  },
+  build: {
+    outDir: "../backend/frontend",
+    emptyOutDir: true,
+  },
 })

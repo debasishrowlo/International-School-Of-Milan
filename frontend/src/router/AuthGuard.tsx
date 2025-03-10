@@ -4,6 +4,7 @@ import { useSelector } from "react-redux"
 
 const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation()
+  // @ts-ignore
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn)
 
   if (!isLoggedIn) {

@@ -1,25 +1,25 @@
 /* eslint-disable react/no-unescaped-entities */
-
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux'
+import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 import cookies from "js-cookie"
 
-import { useLoginUserMutation, useLogoutUserMutation } from '../../redux/features/auth/authapi';
+import { useLoginUserMutation } from '../../redux/features/auth/authapi';
 import { setUser } from '../../redux/features/auth/authSlice';
 
 import "./customCheckbox.css"
 
 const Login = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [loginUser, { isLoading: loginLoading }] = useLoginUserMutation();
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const [loginUser, { isLoading: loginLoading }] = useLoginUserMutation()
 
-  const [message, setMessage] = useState('');
-  const [name, setName] = useState('');
-  const [surname, setSurname] = useState('');
-  const [grade, setGrade] = useState('');
-  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('')
+  const [name, setName] = useState('')
+  const [surname, setSurname] = useState('')
+  const [grade, setGrade] = useState('')
+  const [password, setPassword] = useState('')
+  const [checked, setChecked] = useState(false)
   
   const isLoggedIn = cookies.get("isLoggedIn") !== undefined
 
@@ -102,7 +102,12 @@ const Login = () => {
           Login
         </button>
         <label className="custom-checkbox">
-          <input type="checkbox" required />
+          <input
+            type="checkbox"
+            checked={checked}
+            onChange={() => setChecked(!checked)}
+            required
+          />
           <span></span>
           <p className="my-20 text-center">
             {" "}

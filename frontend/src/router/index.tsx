@@ -46,39 +46,40 @@ export const routes = {
   dashboard_activity: '/dashboard/activities/:slug',
 }
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL
+// const backendUrl = import.meta.env.VITE_BACKEND_URL
+const backendUrl = ""
 
 export const apiRoutes = {
-  bulkCreateUsers: `${backendUrl}/auth/multiRegisterRoute`,
+  bulkCreateUsers: `${backendUrl}/api/auth/multiRegisterRoute`,
 
   users: {
-    list: `${backendUrl}/auth/users`,
-    delete: (id:string) => `${backendUrl}/auth/users/${id}`,
-    update: (id:string) => `${backendUrl}/auth/users/${id}`,
+    list: `${backendUrl}/api/auth/users`,
+    delete: (id:string) => `${backendUrl}/api/auth/users/${id}`,
+    update: (id:string) => `${backendUrl}/api/auth/users/${id}`,
   },
 
   posts: {
     comments: {
-      list: (postId: string) => `${backendUrl}/posts/${postId}/comments`,
-      create: (postId: string) => `${backendUrl}/posts/${postId}/comments`,
+      list: (postId: string) => `${backendUrl}/api/posts/${postId}/comments`,
+      create: (postId: string) => `${backendUrl}/api/posts/${postId}/comments`,
     },
   },
 
   // Posts
-  getPosts: `${backendUrl}/posts`,
-  createPost: `${backendUrl}/posts`,
-  findPost: (postId: string) => `${backendUrl}/posts/${postId}`,
-  updatePost: (post: TPost) => `${backendUrl}/posts/${post.id}`,
-  deletePost: (post: TPost) => `${backendUrl}/posts/${post.id}`,
-  getRelatedPosts: (id: string) => `${backendUrl}/posts/related/${id}`,
+  getPosts: `${backendUrl}/api/posts`,
+  createPost: `${backendUrl}/api/posts`,
+  findPost: (postId: string) => `${backendUrl}/api/posts/${postId}`,
+  updatePost: (post: TPost) => `${backendUrl}/api/posts/${post.id}`,
+  deletePost: (post: TPost) => `${backendUrl}/api/posts/${post.id}`,
+  getRelatedPosts: (id: string) => `${backendUrl}/api/posts/related/${id}`,
 
   // CAS
-  fineCasPost: (postId: string) => `${backendUrl}/cas/${postId}`,
-  createActivity: `${backendUrl}/posts`,
+  fineCasPost: (postId: string) => `${backendUrl}/api/cas/${postId}`,
+  createActivity: `${backendUrl}/api/posts`,
 
   // Activities
-  updateActivity: (activityId: string) => `${backendUrl}/activities/${activityId}`,
-  deleteActivity: (activity: TActivity) => `${backendUrl}/activities/${activity.id}`,
+  updateActivity: (activityId: string) => `${backendUrl}/api/activities/${activityId}`,
+  deleteActivity: (activity: TActivity) => `${backendUrl}/api/activities/${activity.id}`,
 }
 
 export const createSingleNewsRoute = (id: string) => routes.singleNews.replace(':id', id)

@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 export const postApi = createApi({
   reducerPath: 'postsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_BACKEND_URL,
+    baseUrl: "/",
     credentials: 'include',
     prepareHeaders: (headers, { getState }) => {
       const token = localStorage.getItem("token")
@@ -18,18 +18,18 @@ export const postApi = createApi({
   tagTypes: ['Posts'],
   endpoints: (builder) => ({
     fetchPosts: builder.query({
-      query: ({ search = '', category = '', location = '' }) => `/posts?search=${search}&category=${category}&location=${location}`,
+      query: ({ search = '', category = '', location = '' }) => `/api/posts?search=${search}&category=${category}&location=${location}`,
       providesTags: ['Posts']
     }),
     fetchPostById: builder.query({
-      query: (id) => `/posts/${id}`,
+      query: (id) => `/api/posts/${id}`,
     }),
     fetchRelatedPosts: builder.query({
-      query: (id) => `/posts/related/${id}`
+      query: (id) => `/api/posts/related/${id}`
     }),
     createPost: builder.mutation({
       query: (newPost) => ({
-        url: `/posts`,
+        url: `/api/posts`,
         method: "POST",
         body: JSON.stringify(newPost),
         headers: {
@@ -42,7 +42,7 @@ export const postApi = createApi({
     }),
     updatePost: builder.mutation({
       query: ({ id, ...rest }) => ({
-        url: `/posts/update-post/${id}`,
+        url: `/api/posts/update-post/${id}`,
         method: "PATCH",
         body: rest,
         credentials: "include",
@@ -52,7 +52,7 @@ export const postApi = createApi({
 
     deletePost: builder.mutation({
       query: (id) => ({
-        url: `/posts/${id}`,
+        url: `/api/posts/${id}`,
         method: "DELETE",
         credentials: "include",
       }),

@@ -124,83 +124,43 @@ router.post("/", verifyToken, userDataPermission("admin", "moderator","creator")
   }
 })
 
-// Update a post
-router.put("/:id", verifyToken,userDataPermission("admin", "moderator","creator"), async (req, res) => {
-  const postId = req.params.id;
-  const userId = req.user.id; // Assuming the user ID is stored in req.user.id
-  const userRole = req.user.role;
+router.put("/:id", verifyToken, async (req, res) => {
   try {
-    let updateCondition = { _id: postId };
+    const post = await Post.findById(req.params.id).populate("author")
+    console.log(post)
 
-    if (userRole == "admin") {
-      console.log("inside admin condition...")
-      // Admin can update any post
-      updateCondition = { _id: postId };
-    } else if (userRole == "moderator") {
-      // Moderator can update their own posts and creators' posts
-      updateCondition = {
-        _id: postId,
-        $or: [
-          { role: "creator" },
-          { userId: userId }
-        ]
-      };
-    } else if (userRole == "creator") {
-      // Creator can only update their own posts
-      updateCondition = {
-        _id: postId,
-        userId: userId
-      };
-    }
-    console.log("The update condition inside post PUT : ", updateCondition)
-    const post = await Post.updateMany(updateCondition, { ...req.body });
-
-    if (post.nModified > 0) {
-      res.status(200).send({ message: "Post data updated successfully", post });
-    } else {
-      res.status(403).send({ message: "You do not have permission to update this post" });
+    if (!post) {
+      return res.status(404).send()
     }
 
+    if (post.author.id !== req.user.id) {
+      return res.status(403).send()
+    }
 
-    //if(req.user.role == "admin"){
-    //  const post = await Post.updateMany({
-    //    _id:postId} ,{...req.body})
-    //  res.status(200).send({message:"Post data updated Sucessfully", post})
-    //
-    //}else if(req.user.role == "moderator"){
-    //  const post = await Post.updateMany({
-    //    _id:postId,
-    //     role:"moderator"
-    //
-    //  },{...req.body})
-    //  res.status(200).send({message:"Post data updated Sucessfully", post})
-    //
-    //
-    //}
-    //else{
-    //  const post = await Post.updateMany({
-    //    where : {
-    //      _id:postId,
-    //        role:"creator"
-    //    }
-    //  },{...req.body})
-    //  res.status(200).send({message:"Post data updated Sucessfully", post})
-    //}
+    Object.assign(post, req.body)
+    await post.save()
+
+    return res.status(200).send(post)
   } catch (error) {
     console.error("Error Updating Post:", error);
     res.status(500).send({ message: "Error Updating Post" });
   }
 })
 
+const roles = {
+  admin: "admin",
+  moderator: "moderator",
+  creator: "creator",
+}
+
 // Delete a post
-router.delete("/:id", verifyToken, isAdmin, async (req, res) => {
+router.delete("/:id", verifyToken, async (req, res) => {
   try {
     const postId = req.params.id;
      if (req.user.role == "admin") {
       const post = await Post.deleteMany({
-        _id:postId,
-         role:"admin"
-             
+        _id: postId,
+        role: "admin"
       })
       res.status(200).send({message:"Post data deleted Sucessfully", post})
 
@@ -208,24 +168,19 @@ router.delete("/:id", verifyToken, isAdmin, async (req, res) => {
       const post = await Post.deletedOne({
         _id:postId,
          role:"moderator"
-             
       })
 
       res.status(200).send({message:"Post data deleted Sucessfully", post})
-    } else {
-      const post = await Post.deleteOne({
-        where : {
-          _id:postId,
-            role:"creator"
-        }
-      })
-      res.status(200).send({message:"Post data deleted Sucessfully", post})
+    } else if (req.user.role === roles.creator) {
+      const post = await Post.findById(postId).populate("author")
+
+      if (post.author.id === req.user.id) {
+        await Comment.deleteMany({ post: post.id }); 
+        await post.delete()
+      }
+
+      res.status(200).send({ message:"Post data deleted Sucessfully", post })
     }
-
-
-
-    // Delete related comments
-    await Comment.deleteMany({ postId: postId }); 
 
   } catch (error) {
     console.error("Error Deleting Post:", error);
@@ -233,7 +188,7 @@ router.delete("/:id", verifyToken, isAdmin, async (req, res) => {
   }
 })
 
-router.get("/:id/comments", verifyToken, isAdmin, async (req, res) => {
+router.get("/:id/comments", verifyToken, async (req, res) => {
   const postId = req.params.id
 
   const post = await Post.findById(postId).populate({

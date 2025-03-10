@@ -105,7 +105,6 @@ const AddPost = ({ addPostToList, closeModalOnSubmit: closeCreatePostModal }: { 
             username: user?.username || '',
             id: user?.id || '',
           },
-          username: user?.username || '',
         });
 
         if (result.type === 'success') {
